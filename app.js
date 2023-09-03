@@ -1,24 +1,29 @@
-const { error } = require('console');
+require('dotenv').config()
 const express = require ('express')
 const app = express();
 const mongoose = require('mongoose');
 const  productsRouter = require('./src/routes/products.router');
-const PORT = 8080;
+const usersRouter = require('./src/routes/users.router')
+const PORT = process.env.PORT;
 
 app.use(express.json())
 
+app.use("/api/products", productsRouter);
+app.use("/api/users", usersRouter)
 
 
-app.listen(PORT, () =>{
-    console.log(`escuchando en el puerto ${PORT}`)
-})
 
-mongoose.connect('mongodb+srv://mariomastroviti1:GTelibEmjmiqCT5m@cluster0.vey3hwj.mongodb.net/?retryWrites=true&w=majority')
+mongoose.connect(process.env.MONGODB_URL)
 .then(() =>{
     console.log("conectado a la base de datos")
 })
 .catch(error =>{
-    console.log("error en la conexion") 
+    console.log("error en la conexion", error) 
 })
 
-app.use("/api/products", productsRouter)
+app.listen(PORT, () =>{
+    console.log(`escuchando en el puerto ${PORT}`) 
+})
+
+
+
