@@ -4,12 +4,14 @@ const app = express();
 const mongoose = require('mongoose');
 const  productsRouter = require('./src/routes/products.router');
 const usersRouter = require('./src/routes/users.router')
+const cartRouter = require('./src/routes/cart.router')
 const PORT = process.env.PORT;
 
 app.use(express.json())
 
 app.use("/api/products", productsRouter);
 app.use("/api/users", usersRouter)
+app.use("/api/cart", cartRouter)
 
 
 
