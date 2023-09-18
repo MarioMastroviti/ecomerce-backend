@@ -1,7 +1,12 @@
-<form action="">
+<form method="post" action="/restore">
     <label for="email">Email</label>
-    <input type="email">
-    <label for="password">New password</label>
-    <input type="password">
+    <input type="email" name="email" required>
+    
+    <label for="new_password">New Password</label>
+    <input type="password" name="new_password" required>
+
+    <label for="confirm_password">Confirm New Password</label>
+    <input type="password" name="confirm_password" required>
+
     <button type="submit">Submit</button>
 </form>

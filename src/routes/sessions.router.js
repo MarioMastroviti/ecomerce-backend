@@ -5,7 +5,7 @@ const { createHash, isValidatePassword } = require('../../utils.js');
 
 router.post('/register', async (req, res) => {
     let { first_name, last_name, email, age, password } = req.body;
-
+  
 
     if (!first_name || !last_name || !email || !age || !password) {
         return res.status(400).send('Faltan datos.');
@@ -20,9 +20,6 @@ router.post('/register', async (req, res) => {
         age,
         password: hashedPassword
     });
-
-    res.send({ status: "success", payload: user });
-    console.log('Usuario registrado con éxito.' + user);
      res.redirect('/login');
 });
 
@@ -33,17 +30,55 @@ router.get("/failuregister", async (req, res) => {
 })
 
 
-
-router.get('/login', (req, res) => {
+router.post('/login', async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).send({ status: "error", error: "valores incorrectos" })
-    const user = usersModel.findOne({ email: email }, { email: 1, first_name: 1, last_name: 1, password })
-    if (!user) return res.status(400).send({ status: "error", error: "usuario no encontrado" })
-    if (!isValidatePassword(user, password)) return res.status(403).send({ status: "error", error: "Password incorrecto" })
-   delete user.password
-    req.session.user = user
-    res.send({ status: "success", payload: user })
+    
+    try {
+        const user = await usersModel.findOne({ email: email })
+    
+        if (!user) {
+            return res.status(400).send({ status: "error", error: "Usuario no encontrado" })
+        }
+
+        if (!isValidatePassword(user, password)) {
+            return res.status(403).send({ status: "error", error: "Contraseña incorrecta" })
+        }
+        
+        req.session.user = user
+        res.redirect('/profile');
+    
+    } catch (error) {
+        console.error("Error al autenticar usuario:", error);
+        res.status(500).send({ status: "error", error: "Error interno del servidor" })
+    }
+})
+
+router.post('/restore', async (req, res) => {
+    const { email, new_password, confirm_password } = req.body;
+
+  
+    if (new_password !== confirm_password) {
+        return res.status(400).send({ status: "error", error: "Las contraseñas no coinciden" });
+    }
+
+    try {
+        const user = await usersModel.findOne({ email: email });
+        if (!user) {
+            return res.status(400).send({ status: "error", error: "Usuario no encontrado" })
+        }
+
+        const hashedPassword = createHash(new_password);
+
+        await usersModel.updateOne({ _id: user._id }, { password: hashedPassword });
+
+        res.redirect('/login');
+    } catch (error) {
+        console.error("Error al restaurar la contraseña:", error);
+        res.status(500).send({ status: "error", error: "Error interno del servidor" });
+    }
 });
+
 
 
 module.exports = router;

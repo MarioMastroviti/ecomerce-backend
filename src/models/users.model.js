@@ -4,14 +4,14 @@ const usersCollection = "users"
 
 const usersSchema = new mongoose.Schema({
    
-    nombre: {
+    first_name: {
         type: String,
         required: true,
         max:50,
         min:3
     },
     
-    apellido: {
+    last_name: {
         type: String,
         required: true,
         max: 50,
@@ -24,13 +24,21 @@ const usersSchema = new mongoose.Schema({
         min: 10
     },
 
-    dni: {
+    age: {
         type: Number,
         required: true,
-         min: 7
+         
+    },
+
+    password: {
+        type: String,
+         required: true,
+         min: 3
     }
+
 })
 
 const usersModel = mongoose.model(usersCollection, usersSchema)
 
 module.exports = {usersModel}
+

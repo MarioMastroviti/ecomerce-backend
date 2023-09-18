@@ -10,14 +10,13 @@ const bodyParser = require('body-parser');
 const handlebars = require('express-handlebars');
 const MongoStore = require('connect-mongo');
 const passport = require("passport")
+const path = require('path')
 const PORT = 8080;
 
 app.use(express.json())
 
 
-
-
-mongoose.connect('mongodb+srv://mariomastroviti1:GTelibEmjmiqCT5m@cluster0.vey3hwj.mongodb.net/e-comerce?retryWrites=true&w=majority', {
+mongoose.connect('mongodb+srv://mariomastroviti1:GTelibEmjmiqCT5m@cluster0.vey3hwj.mongodb.net/e-comerce2?retryWrites=true&w=majority', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 })
@@ -34,7 +33,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(session({
     store: MongoStore.create({
-        mongoUrl: 'mongodb+srv://mariomastroviti1:GTelibEmjmiqCT5m@cluster0.vey3hwj.mongodb.net/e-comerce?retryWrites=true&w=majority',
+        mongoUrl: 'mongodb+srv://mariomastroviti1:GTelibEmjmiqCT5m@cluster0.vey3hwj.mongodb.net/e-comerce2?retryWrites=true&w=majority',
         mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
         ttl: 600,
     }),
@@ -47,15 +46,16 @@ app.use(session({
 app.use(passport.initialize())
 app.use(passport.session())
 
-app.engine("handlebars", handlebars.engine())
-app.set("views", __dirname + '/views')
-app.set("view engine", "handlebars")
+// Configuración de Handlebars
+app.engine('handlebars', handlebars.engine());
+app.set("views", path.join(__dirname, "views"));
+app.set('view engine', 'handlebars');
 
 
 app.use("/api/products", productsRouter);
 app.use("/api/cart", cartRouter)
-app.use("/api/sessions", sessionsRouter)
-app.use("/api/views", viewsRouter)
+app.use("/", sessionsRouter)
+app.use("/", viewsRouter)
 
 
 
@@ -63,6 +63,3 @@ app.use("/api/views", viewsRouter)
 app.listen(PORT, () =>{
     console.log(`escuchando en el puerto ${PORT}`) 
 })
-
-
-
