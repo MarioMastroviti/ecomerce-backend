@@ -1,4 +1,4 @@
-const {Router} = require ('express')
+/*const {Router} = require ('express')
 const {usersModel} = require('../models/users.model.js')
 const router = Router()
 
@@ -50,3 +50,5 @@ router.delete("/:uid", async (req,res) =>{
 } )
 
 module.exports= router
+
+*/

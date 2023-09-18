@@ -65,7 +65,7 @@ router.put("/:cid", async (req, res) => {
       carrito.products.push({ product: pid, quantity: quantity });
     }
 
-    await carrito.save();
+    cartModel.updateOne({_id: cid}, carrito)
 
     return res.status(200).json({ status: "success", payload: carrito });
 
@@ -93,7 +93,7 @@ router.delete("/:cid/product/:pid", async (req, res) => {
       return res.status(400).json({ status: "error", error: "Producto no existe en el carrito" });
     } else{
       carrito.products.splice(existingProduct, 1);
-      carrito.save()
+      cartModel.updateOne({_id: cid}, carrito)
     }
    
     return res.status(201).send({ carrito });
@@ -117,7 +117,7 @@ router.delete("/:cid", async (req, res) => {
     }
    
       carrito.products.splice(0, carrito.products.length);
-      carrito.save()
+      cartModel.updateOne({_id: cid}, carrito)
     
    
     return res.status(201).send({ carrito });
@@ -164,7 +164,7 @@ router.delete("/:cid", async (req, res) => {
       return res.status(400).json({ status: "error", error: "producto no agregado al carrito" });
     }
 
-    await carrito.save();
+    cartModel.updateOne({_id: cid}, carrito)
 
     return res.status(200).json({ status: "success", payload: carrito });
 
