@@ -26,4 +26,24 @@ router.post('/register', async (req, res) => {
      res.redirect('/login');
 });
 
+
+router.get("/failuregister", async (req, res) => {
+    console.log("Falla en autenticacion")
+    res.send({ error: "Falla" })
+})
+
+
+
+router.get('/login', (req, res) => {
+    const { email, password } = req.body;
+    if (!email || !password) return res.status(400).send({ status: "error", error: "valores incorrectos" })
+    const user = usersModel.findOne({ email: email }, { email: 1, first_name: 1, last_name: 1, password })
+    if (!user) return res.status(400).send({ status: "error", error: "usuario no encontrado" })
+    if (!isValidatePassword(user, password)) return res.status(403).send({ status: "error", error: "Password incorrecto" })
+   delete user.password
+    req.session.user = user
+    res.send({ status: "success", payload: user })
+});
+
+
 module.exports = router;

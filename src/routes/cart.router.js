@@ -38,14 +38,9 @@ router.post("/", async (req, res) => {
 router.put("/:cid", async (req, res) => {
   try {
     const { cid } = req.params;
-    const {pid} = req.body;
+    const {pid, quantity = 1} = req.body;
+
  
-    const quantity = parseInt(req.body.quantity);
-
-    if (quantity <= 0) {
-      return res.send({ status: "error", error: "ingresar al menos una unidad del producto" })
-    }
-
     const carrito = await cartModel.findOne({ _id: cid })
     const product = await productsModel.findOne({ _id: pid })
   
@@ -79,21 +74,21 @@ router.put("/:cid", async (req, res) => {
   }
 });
 
-
 router.delete("/:cid/product/:pid", async (req, res) => {
   try {
     const { cid , pid } = req.params;
+
 
     const carrito = await cartModel.findOne({ _id : cid });
     if(!carrito){
       return res.status(400).json({ status: "error", error: "Carrito no existe" });
     }
-    const existingProduct = carrito.products.find(item => item && item.product && item.product.equals(pid));
+    const existingProduct = carrito.products.filter(item => item.product!=pid);
     if(!existingProduct){
       return res.status(400).json({ status: "error", error: "Producto no existe en el carrito" });
     } else{
-      carrito.products.splice(existingProduct, 1);
-      cartModel.updateOne({_id: cid}, carrito)
+      carrito.products = existingProduct
+      carrito.save()
     }
    
     return res.status(201).send({ carrito });
@@ -101,6 +96,7 @@ router.delete("/:cid/product/:pid", async (req, res) => {
   } catch (error) {
  
     return res.status(400).json({ status: "error", error: "no se pudo eliminar el producto" });
+
 
   }
 });

@@ -1,4 +1,3 @@
-require('dotenv').config()
 const express = require ('express')
 const app = express();
 const mongoose = require('mongoose');
@@ -22,9 +21,12 @@ mongoose.connect('mongodb+srv://mariomastroviti1:GTelibEmjmiqCT5m@cluster0.vey3h
     useNewUrlParser: true,
     useUnifiedTopology: true,
 })
-.catch(error =>{
-    console.log("error en la conexion", error) 
+.then(() => {
+    console.log("Conexión exitosa a la base de datos");
 })
+.catch(error => {
+    console.error("Error en la conexión a la base de datos", error);
+});
 
 
 
@@ -36,7 +38,7 @@ app.use(session({
         mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
         ttl: 600,
     }),
-    secret: 'coderhouse',
+    secret: 'claveSecreta',
     resave: false,
     saveUninitialized: true,
 }));
