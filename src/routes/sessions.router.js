@@ -32,7 +32,7 @@ router.get("/failregister", async (req, res) => {
 
 
 router.post("/login", passport.authenticate("login", { failureRedirect: "/faillogin" }), async (req, res) => {
-    if (!req.session.user) {
+    if (!req.user) {
         return res.status(400).send("Usuario no encontrado")
     }
     req.session.user = {
@@ -41,7 +41,7 @@ router.post("/login", passport.authenticate("login", { failureRedirect: "/faillo
         email: req.user.email,
         age: req.user.age
     }
-    res.redirect('/api/sessions/profile');
+    res.redirect('/api/sessions/products');
 }
 )
 

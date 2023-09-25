@@ -3,13 +3,7 @@ const bcrypt = require("bcrypt")
 const createHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(10))
 
 
-const isValidatePassword = async (plainPassword, hashedPassword) => {
-    try {
-        return await bcrypt.compare(plainPassword, hashedPassword);
-    } catch (error) {
-        throw error;
-    }
-};
+const isValidatePassword = (password, user) => bcrypt.compareSync(password, user.password)
 
 
 module.exports = {

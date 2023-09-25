@@ -15,12 +15,11 @@ const initializePassport = () => {
                 try {
                     let user = await usersModel.findOne({ email: username });
                     if (user) {
-                    return done(null, false);
+                    return done(null, false,  { message: "Usuario ya registrado" });
                     }
 
                     if (!first_name || !last_name || !email || !age || !password) {
-                        console.log("Faltan campos obligatorios");
-                        return done(null, false);
+                        return done(null, false,  { message: "Falta completar datos" });
                     }
 
                     const newUser = {
@@ -31,7 +30,7 @@ const initializePassport = () => {
                         password: createHash(password),
                     };
                     let result = await usersModel.create(newUser);
-                    return done(null, result);
+                    return done(null, result, { message: "Usuario registrado con exito" });
                 } catch (error) {
                     return done("Error al obtener el usuario " + error);
                 }
@@ -42,23 +41,22 @@ const initializePassport = () => {
     passport.use(
         "login",
         new localStrategy({ usernameField: "email" }, async (username, password, done) => {
-          try {
-            const user = await usersModel.findOne({ email: username });
-            if (!user) {
-              return done(null, false);
-           }
-   
-             if (!isValidatePassword(password, user.password)) { 
-              return done(null, false);
+            try {
+                const user = await usersModel.findOne({ email: username });
+                if (!user) {
+                    return done(null, false,  { message: "usuario no registrado" });
+                }
+    
+                if (!isValidatePassword(password, user.password)) {
+                    return done(null, false, { message: "Contraseña incorrecta" });
+                }
+    
+                return done(null, user,  { message: "Inicio de sesión exitoso" });
+            } catch (error) {
+                return done(error);
             }
-      
-            return done(null, user);
-          } catch (error) {
-            return done(error);
-          }
         })
-      );
-      
+    );
 
     passport.use("github", new GitHubStrategy({
         clientID: "Iv1.e0fad190055cf2a3",

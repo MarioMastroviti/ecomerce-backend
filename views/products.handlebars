@@ -1,51 +1,11 @@
-<div id="contenedor">
-    {{#each producto}}
-    <div class="card">
-        <div class="basicInfo">
-            <div class="title">
-                <div class="category">{{category}}</div>
-                <div class="name">{{title}}</div>
-               <div class="info">Índice actual: {{@index}}</div>
-                
-            </div>
-            <div class="images">
-                <div class="img">
-                    <div class="item">
-                        <input type="radio" name="color{{@index}}" id="green{{@index}}" checked>
-                        <img src="{{thumbnail.[0]}}">
-                    </div>
-                    <div class="item">
-                        <input type="radio" name="color{{@index}}" id="black{{@index}}">
-                        <img src="{{thumbnail.[1]}}">
-                    </div>
-                </div>
-            </div>
-            <div class="colors">
-                <label for="green{{@index}}">
-                    <div class="name">Modelo1</div>
-                    <div class="ellipse" style="background:#d5740b"></div>
-                </label>
-
-                <label for="black{{@index}}">
-                    <div class="name">Modelo2</div>
-                    <div class="ellipse" style="background:#2B2B2B"></div>
-                </label>
-            </div>
-            <div class="addCard">
-                <i class="fa-solid fa-basket-shopping"></i>
-            </div>
-        </div>
-        <div class="mores">
-            <div class="stars">
-                <i class="fa-regular fa-star text-yellow"></i>
-                <i class="fa-regular fa-star text-yellow"></i>
-                <i class="fa-regular fa-star text-yellow"></i>
-                <i class="fa-regular fa-star text-yellow"></i>
-                <i class="fa-regular fa-star"></i>
-            </div>
-            <div class="price">{{price}}</div>
-        </div>
-
-    </div>
+<h1>Lista de Productos</h1>
+<ul>
+    {{#each products}}
+        <li>
+            <h2>{{titulo}}</h2>
+            <p>Categoria: {{categoria}}</p>
+            <p>Precio: {{precio}}</p>
+             <p>Stock: {{stock}}</p>
+        </li>
     {{/each}}
-</div>
+</ul>

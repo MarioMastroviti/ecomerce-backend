@@ -26,11 +26,10 @@ router.get('/api/sessions/restore', (req, res) => {
     res.render('restore'); 
 });
 
-router.get('/products', async (req, res) => {
-    const lista = await productsModel.find().lean();
-    res.render('products', lista); 
+router.get('/api/sessions/products', async (req, res) => {
+    const products = await productsModel.find().lean();
+    res.render('products', { products });
 });
-
 
 
 router.get("/api/sessions/github", passport.authenticate("github", { scope: ["user:email"] }), async (req, res) => { })
@@ -40,6 +39,9 @@ router.get("/api/sessions/githubcallback", passport.authenticate("github", { fai
     res.redirect("/api/sessions/profile")
 
 })
+
+
+
 
 
 module.exports = router;
