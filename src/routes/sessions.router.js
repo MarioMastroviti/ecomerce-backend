@@ -31,7 +31,7 @@ router.get("/failregister", async (req, res) => {
 })
 
 
-router.post("/login", passport.authenticate("login", { failureRedirect: "/faillogin" }), async (req, res) => {
+router.post("/login", passport.authenticate("login", { failureRedirect: "/api/sessions/login" , failureFlash: true,}), async (req, res) => {
     if (!req.user) {
         return res.status(400).send("Usuario no encontrado")
     }
@@ -71,8 +71,5 @@ router.post('/restore', async (req, res) => {
 });
 
 
-router.get("/api/sessions/faillogin", async (req, res) => {
-    res.send({ error: "Falla" })
-})
 
 module.exports = router;

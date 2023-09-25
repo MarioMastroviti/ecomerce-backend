@@ -1,3 +1,5 @@
+
+
 <form method="post" action="/api/sessions/login">
     <label for="email">Email</label>
     <input type="email" name="email" required>
@@ -13,3 +15,72 @@
 <div>
     <a href="/api/sessions/github"><button>Inicar sesion con Github</button></a>
 </div>
+
+
+
+  <style>
+    form {
+    max-width: 300px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+}
+
+div{
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+}
+label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 16px;
+}
+
+button[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+a {
+    text-decoration: none;
+    color: #007bff;
+    font-size: 14px;
+}
+
+
+div a button {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 16px;
+    text-decoration: none;
+    
+}
+

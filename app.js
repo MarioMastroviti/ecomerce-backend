@@ -13,6 +13,7 @@ const passport = require("passport")
 const path = require('path')
 const cookieParser = require('cookie-parser')
 const initializePassport = require("./src/config/passport.config");
+const flash = require('connect-flash');
 const PORT = 8080;
 
 app.use(express.json())
@@ -43,7 +44,7 @@ app.use(session({
     resave: false,
     saveUninitialized: true,
 }));
-
+app.use(flash());
 
 initializePassport(passport)
 app.use(passport.initialize())

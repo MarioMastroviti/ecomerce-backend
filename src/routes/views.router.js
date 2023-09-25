@@ -36,7 +36,7 @@ router.get("/api/sessions/github", passport.authenticate("github", { scope: ["us
 
 router.get("/api/sessions/githubcallback", passport.authenticate("github", { failureRedirect: "/login" }), async (req, res) => {
     req.session.user = req.user
-    res.redirect("/api/sessions/profile")
+    res.redirect("/api/sessions/products")
 
 })
 
