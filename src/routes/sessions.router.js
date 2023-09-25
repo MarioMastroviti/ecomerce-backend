@@ -2,59 +2,48 @@ const express = require('express');
 const router = express.Router();
 const {usersModel} = require('../models/users.model.js')
 const { createHash, isValidatePassword } = require('../../utils.js');
+const passport = require("passport")
 
-router.post('/register', async (req, res) => {
-    let { first_name, last_name, email, age, password } = req.body;
-  
+
+router.post('/register', passport.authenticate("register", { failureRedirect: "/api/sessions/failregister" }), async (req, res) => {
+    const { first_name, last_name, email, age, password } = req.body;
+
 
     if (!first_name || !last_name || !email || !age || !password) {
         return res.status(400).send('Faltan datos.');
     }
 
-    const hashedPassword = createHash(password);
 
-    let user = await usersModel.create({
+    await usersModel.create({
         first_name,
         last_name,
         email,
         age,
-        password: hashedPassword
+        password: createHash(password)
     });
-     res.redirect('/login');
+
+   
+    res.redirect('/api/sessions/login');
 });
 
-
-router.get("/failuregister", async (req, res) => {
-    console.log("Falla en autenticacion")
-    res.send({ error: "Falla" })
+router.get("/failregister", async (req, res) => {
+   res.send({ error: "usuario ya existente" })
 })
 
 
-
-
-router.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-    if (!email || !password) return res.status(400).send({ status: "error", error: "valores incorrectos" })
-    
-    try {
-        const user = await usersModel.findOne({ email: email })
-    
-        if (!user) {
-            return res.status(400).send({ status: "error", error: "Usuario no encontrado" })
-        }
-
-        if (!isValidatePassword(user, password)) {
-            return res.status(403).send({ status: "error", error: "Contraseña incorrecta" })
-        }
-        
-        req.session.user = user
-        res.redirect('/profile');
-    
-    } catch (error) {
-        console.error("Error al autenticar usuario:", error);
-        res.status(500).send({ status: "error", error: "Error interno del servidor" })
+router.post("/login", passport.authenticate("login", { failureRedirect: "/faillogin" }), async (req, res) => {
+    if (!req.session.user) {
+        return res.status(400).send("Usuario no encontrado")
     }
-})
+    req.session.user = {
+        first_name: req.user.first_name,
+        last_name: req.user.last_name,
+        email: req.user.email,
+        age: req.user.age
+    }
+    res.redirect('/api/sessions/profile');
+}
+)
 
 router.post('/restore', async (req, res) => {
     const { email, new_password, confirm_password } = req.body;
@@ -82,5 +71,9 @@ router.post('/restore', async (req, res) => {
 });
 
 
+router.get("/faillogin", async (req, res) => {
+    console.log("Falla en autenticacion")
+    res.send({ error: "Falla" })
+})
 
 module.exports = router;

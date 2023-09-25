@@ -11,6 +11,8 @@ const handlebars = require('express-handlebars');
 const MongoStore = require('connect-mongo');
 const passport = require("passport")
 const path = require('path')
+const cookieParser = require('cookie-parser')
+const initializePassport = require("./src/config/passport.config");
 const PORT = 8080;
 
 app.use(express.json())
@@ -43,8 +45,10 @@ app.use(session({
 }));
 
 
+initializePassport(passport)
 app.use(passport.initialize())
 app.use(passport.session())
+app.use(cookieParser())
 
 // Configuración de Handlebars
 app.engine('handlebars', handlebars.engine());
@@ -54,7 +58,7 @@ app.set('view engine', 'handlebars');
 
 app.use("/api/products", productsRouter);
 app.use("/api/cart", cartRouter)
-app.use("/", sessionsRouter)
+app.use("/api/sessions", sessionsRouter)
 app.use("/", viewsRouter)
 
 
