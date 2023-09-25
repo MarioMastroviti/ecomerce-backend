@@ -40,18 +40,18 @@ const initializePassport = () => {
 
     passport.use(
         "login",
-        new localStrategy({ usernameField: "email"}, async ( username, password, done) => {
+        new localStrategy({ usernameField: "email", passReqToCallback: true,}, async (req, username, password, done) => {
             try {
                 const user = await usersModel.findOne({ email: username });
                 if (!user) {
-                     return done(null, false);
+                    req.session.error = "Usuario no registrado";
+                    return done(null, false);
                 }
     
-                
                 if (!isValidatePassword(password, user)) {
-                     return done(null, false);
-
-                 }
+                    req.session.error = "Contraseña incorrecta"; 
+                    return done(null, false);
+                }
     
                 return done(null, user);
             } catch (error) {

@@ -30,20 +30,28 @@ router.get("/failregister", async (req, res) => {
    res.send({ error: "usuario ya existente" })
 })
 
-
-router.post("/login", passport.authenticate("login", { failureRedirect: "/api/sessions/login" , failureFlash: true,}), async (req, res) => {
+router.post("/login", (req, res, next) => {
+    passport.authenticate("login", {
+        failureRedirect: "/api/sessions/login",
+        failureFlash: true
+    })(req, res, next);
+}, async (req, res) => {
     if (!req.user) {
-        return res.status(400).send("Usuario no encontrado")
+        const errorMessage = req.flash("error")[0]; 
+        if (errorMessage) {
+            req.session.error = errorMessage; 
+        }
+        return res.status(400).send(errorMessage || "Usuario no encontrado");
     }
+
     req.session.user = {
         first_name: req.user.first_name,
         last_name: req.user.last_name,
         email: req.user.email,
         age: req.user.age
-    }
+    };
     res.redirect('/api/sessions/products');
-}
-)
+});
 
 router.post('/restore', async (req, res) => {
     const { email, new_password, confirm_password } = req.body;
@@ -63,7 +71,7 @@ router.post('/restore', async (req, res) => {
 
         await usersModel.updateOne({ _id: user._id }, { password: hashedPassword });
 
-        res.redirect('/login');
+        res.redirect('/api/sessions/login');
     } catch (error) {
         console.error("Error al restaurar la contraseña:", error);
         res.status(500).send({ status: "error", error: "Error interno del servidor" });

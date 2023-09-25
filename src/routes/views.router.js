@@ -27,6 +27,10 @@ router.get('/api/sessions/restore', (req, res) => {
 });
 
 router.get('/api/sessions/products', async (req, res) => {
+    if (!req.session.user) {
+        return res.redirect('/api/sessions/login');
+    }
+    const { first_name, last_name, email, age } = req.session.user;
     const products = await productsModel.find().lean();
     res.render('products', { products });
 });
