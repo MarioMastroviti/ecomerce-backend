@@ -71,8 +71,7 @@ router.post('/restore', async (req, res) => {
 });
 
 
-router.get("/faillogin", async (req, res) => {
-    console.log("Falla en autenticacion")
+router.get("/api/sessions/faillogin", async (req, res) => {
     res.send({ error: "Falla" })
 })
 

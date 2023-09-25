@@ -47,11 +47,12 @@ const initializePassport = () => {
                     return done(null, false,  { message: "usuario no registrado" });
                 }
     
-                if (!isValidatePassword(password, user.password)) {
-                    return done(null, false, { message: "Contraseña incorrecta" });
+            
+                if (!isValidatePassword(password, user)) {
+                    return done(null, false);
                 }
     
-                return done(null, user,  { message: "Inicio de sesión exitoso" });
+                return done(null, user);
             } catch (error) {
                 return done(error);
             }
