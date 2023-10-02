@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {usersModel} = require('../models/users.model.js')
+const {usersModel, cambiarRole} = require('../models/users.model.js')
 const { createHash, isValidatePassword } = require('../../utils.js');
 const passport = require("passport")
 
@@ -77,6 +77,24 @@ router.post('/restore', async (req, res) => {
         res.status(500).send({ status: "error", error: "Error interno del servidor" });
     }
 });
+
+router.post('/cambiarrole/:email', async (req, res) => {
+    const { email } = req.params;
+    const { nuevoRole } = req.body;
+  
+    if (!email || !nuevoRole) {
+      return res.status(400).json({ status: 'error', error: 'Faltan datos' });
+    }
+  
+    const result = await cambiarRole(email, nuevoRole);
+  
+  
+    if (result.status === 'success') {
+      res.status(200).json(result);
+    } else {
+      res.status(500).json(result);
+    }
+  });
 
 
 
