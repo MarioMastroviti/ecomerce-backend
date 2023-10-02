@@ -42,10 +42,10 @@ const usersSchema = new mongoose.Schema({
     }
 })
 
-async function cambiarRole(email, nuevoRole) {
+async function cambiarRole(userId, nuevoRole) {
     try {
       
-      const user = await usersModel.findOne(email);
+      const user = await usersModel.findById(userId);
   
       if (!user) {
         throw new Error('Usuario no encontrado');

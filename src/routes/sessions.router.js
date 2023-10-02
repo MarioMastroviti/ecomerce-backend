@@ -20,7 +20,7 @@ router.post('/register', passport.authenticate("register", { failureRedirect: "/
         email,
         age,
         password: createHash(password)
-    });
+        });
 
    
     res.redirect('/api/sessions/login');
@@ -78,15 +78,15 @@ router.post('/restore', async (req, res) => {
     }
 });
 
-router.post('/cambiarrole/:email', async (req, res) => {
-    const { email } = req.params;
+router.put('/cambiarrole/:userId', async (req, res) => {
+    const { userId } = req.params;
     const { nuevoRole } = req.body;
   
-    if (!email || !nuevoRole) {
+    if (!userId || !nuevoRole) {
       return res.status(400).json({ status: 'error', error: 'Faltan datos' });
     }
   
-    const result = await cambiarRole(email, nuevoRole);
+    const result = await cambiarRole(userId, nuevoRole);
   
   
     if (result.status === 'success') {
