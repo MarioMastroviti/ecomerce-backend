@@ -3,7 +3,7 @@ const app = express();
 const mongoose = require('mongoose');
 const  productsRouter = require('./src/routes/products.router');
 const cartRouter = require('./src/routes/cart.router')
-const sessionsRouter = require('./src/routes/sessions.router')
+const usersRouter = require('./src/routes/users.router')
 const viewsRouter = require('./src/routes/views.router')
 const session = require('express-session');
 const bodyParser = require('body-parser');
@@ -14,12 +14,13 @@ const path = require('path')
 const cookieParser = require('cookie-parser')
 const initializePassport = require("./src/config/passport.config");
 const flash = require('connect-flash');
-const PORT = 8080;
+require('dotenv').config()
+const PORT =  process.env.PORT;
 
 app.use(express.json())
 
 
-mongoose.connect('mongodb+srv://mariomastroviti1:GTelibEmjmiqCT5m@cluster0.vey3hwj.mongodb.net/e-comerce2?retryWrites=true&w=majority', {
+mongoose.connect(process.env.MONGODB_URL , {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 })
@@ -34,16 +35,21 @@ mongoose.connect('mongodb+srv://mariomastroviti1:GTelibEmjmiqCT5m@cluster0.vey3h
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(session({
-    store: MongoStore.create({
-        mongoUrl: 'mongodb+srv://mariomastroviti1:GTelibEmjmiqCT5m@cluster0.vey3hwj.mongodb.net/e-comerce2?retryWrites=true&w=majority',
-        mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
+app.use(
+    session({
+      store: MongoStore.create({
+        mongoUrl: process.env.MONGODB_URL, 
         ttl: 600,
-    }),
-    secret: 'claveSecreta',
-    resave: false,
-    saveUninitialized: true,
-}));
+      }),
+      secret: process.env.clave_secreta,
+      resave: false,
+      saveUninitialized: true,
+    })
+  );
+  
+
+  
+  
 app.use(flash());
 
 initializePassport(passport)
@@ -59,7 +65,7 @@ app.set('view engine', 'handlebars');
 
 app.use("/api/products", productsRouter);
 app.use("/api/cart", cartRouter)
-app.use("/api/sessions", sessionsRouter)
+app.use("/api/sessions", usersRouter)
 app.use("/", viewsRouter)
 
 

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { productsModel } = require('../models/products.model.js')
+const { productsModel } = require('../dao/mongo/models/products.model.js')
 const passport = require("passport")
 
 
