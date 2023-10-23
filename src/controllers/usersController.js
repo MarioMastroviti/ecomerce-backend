@@ -1,6 +1,6 @@
-const {usersModel, cambiarRole} = require('../dao/mongo/models/users.model.js')
-const { createHash, isValidatePassword } = require('../../utils.js');
+const userDao = require('../dao/classes/users.dao')
 const passport = require("passport")
+
 
 
 exports.registerUser = async (req, res) => {
@@ -11,13 +11,13 @@ exports.registerUser = async (req, res) => {
             return res.status(400).json({ result: "error", error: 'Faltan datos.' });
         }
 
-       
-        await usersModel.create({
+   
+        await userDao.createUser({
             first_name,
             last_name,
             email,
             age,
-            password: createHash(password)
+            password
         });
 
         res.redirect('/api/sessions/login');
@@ -26,6 +26,8 @@ exports.registerUser = async (req, res) => {
         res.status(500).json({ result: "error", error: "Error interno del servidor" });
     }
 };
+
+
 
 exports.failRegister = async (req, res) => {
     res.json({ error: "Usuario ya existente" });
@@ -69,22 +71,22 @@ exports.restorePassword = async (req, res) => {
     }
 
     try {
-        const user = await usersModel.findOne({ email: email });
+        const user = await userDao.findUserByEmail(email);
         if (!user) {
             return res.status(404).json({ result: "error", error: "Usuario no encontrado" });
         }
 
-        const hashedPassword = createHash(new_password);
-
-        await usersModel.updateOne({ _id: user._id }, { password: hashedPassword });
+        await userDao.updatePassword(user._id, new_password);
 
         res.redirect('/api/sessions/login');
-
     } catch (error) {
         console.error("Error al restaurar la contraseña:", error);
         res.status(500).json({ result: "error", error: "Error interno del servidor" });
     }
 };
+
+
+
 
 
 exports.changeUserRole = async (req, res) => {
@@ -96,7 +98,7 @@ exports.changeUserRole = async (req, res) => {
             return res.status(400).json({ result: 'error', error: 'Faltan datos' });
         }
 
-        const result = await cambiarRole(userId, nuevoRole);
+        const result = await userDao.changeUserRole(userId, nuevoRole);
 
         if (result.status === 'success') {
             res.status(200).json(result);
