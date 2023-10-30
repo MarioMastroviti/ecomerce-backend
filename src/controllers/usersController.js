@@ -1,7 +1,9 @@
-const userDao = require('../dao/classes/users.dao')
+const daoUser = require('../dao/classes/users.dao.js')
+const UsersDTO = require('../dao/DTOs/users.dto.js'); 
 const passport = require("passport")
 
 
+const userDao = new daoUser()
 
 exports.registerUser = async (req, res) => {
     try {
@@ -11,14 +13,18 @@ exports.registerUser = async (req, res) => {
             return res.status(400).json({ result: "error", error: 'Faltan datos.' });
         }
 
-   
-        await userDao.createUser({
+        const userDTO = new UsersDTO({
             first_name,
             last_name,
             email,
             age,
             password
+            
         });
+        
+
+       await userDao.createUser(userDTO)
+
 
         res.redirect('/api/sessions/login');
     } catch (error) {
@@ -26,6 +32,7 @@ exports.registerUser = async (req, res) => {
         res.status(500).json({ result: "error", error: "Error interno del servidor" });
     }
 };
+
 
 
 

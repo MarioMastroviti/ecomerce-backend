@@ -17,7 +17,8 @@ const flash = require('connect-flash');
 require('dotenv').config()
 const PORT =  process.env.PORT;
 
-app.use(express.json())
+app.use(express.json());
+
 
 
 mongoose.connect(process.env.MONGODB_URL , {

@@ -1,4 +1,5 @@
 const daoCart = require('../dao/classes/cart.dao')
+const CartDTO = require('../dao/DTOs/carts.dto');
 
 const cartDao = new daoCart()
 
@@ -11,22 +12,31 @@ exports.getCartById = async (req, res) => {
             return res.status(404).json({ result: 'error', error: 'Carrito no encontrado.' });
         }
 
-        res.json({ result: 'success', payload: carritoBuscado });
+ 
+        const cartDTO = new CartDTO(carritoBuscado);
+
+        res.json({ result: 'success', payload: cartDTO });
     } catch (error) {
         console.error("Error al obtener el carrito:", error);
         res.status(500).json({ result: "error", error: "Error interno del servidor" });
     }
 };
+
 exports.createCart = async (req, res) => {
     try {
         const { uid } = req.body;
         const cart = await cartDao.createCart(uid);
-        res.status(201).json({ result: 'success', payload: cart });
+
+
+        const cartDTO = new CartDTO(cart);
+
+        res.status(201).json({ result: 'success', payload: cartDTO });
     } catch (error) {
         console.error("Error al crear el carrito:", error);
         res.status(500).json({ result: 'error', error: 'Error interno del servidor' });
     }
 };
+
 
 
 exports.addToCart = async (req, res) => {

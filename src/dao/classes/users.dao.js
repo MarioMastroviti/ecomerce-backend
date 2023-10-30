@@ -4,8 +4,10 @@ const passport = require("passport")
 
 
 class UserDao {
+    
     createUser = async ({ first_name, last_name, email, age, password }) => {
         try {
+           
             const hashedPassword = createHash(password);
             await usersModel.create({
                 first_name,
@@ -18,7 +20,6 @@ class UserDao {
             throw error;
         }
     }
-
 
 findUserByEmail = async(email) => {
         try {
