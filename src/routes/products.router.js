@@ -2,7 +2,7 @@ const { Router } = require('express')
 const router = Router();
 const productsController = require('../controllers/productController.js')
 
-router.get("/", productsController.getProducts);
+router.get("/getProducts", productsController.getProducts);
 
 router.get("/:pid", productsController.getProductById);
 
@@ -14,3 +14,4 @@ router.delete("/:pid",productsController.deleteProduct);
 
 
 module.exports = router
+

@@ -44,8 +44,15 @@ router.get("/api/sessions/githubcallback", passport.authenticate("github", { fai
 
 })
 
+router.get('/api/products', (req, res) => {
+    res.render('createProduct'); 
+});
 
-
+router.get('/api/chat', (req, res) => {
+    res.render('chat', {
+        titulo: 'chat en tiempo real'
+    });
+});
 
 
 module.exports = router;

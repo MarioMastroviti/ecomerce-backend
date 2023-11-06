@@ -15,9 +15,16 @@ const cookieParser = require('cookie-parser')
 const initializePassport = require("./src/config/passport.config");
 const flash = require('connect-flash');
 require('dotenv').config()
+const http = require('http');
+const Swal = require('sweetalert2');
+const socketIo = require('socket.io');
+const server = http.createServer(app);
+const io = socketIo(server);
+
 const PORT =  process.env.PORT;
 
 app.use(express.json());
+app.use(express.static(__dirname + '/src/public'));
 
 
 
@@ -58,10 +65,18 @@ app.use(passport.initialize())
 app.use(passport.session())
 app.use(cookieParser())
 
-// Configuración de Handlebars
-app.engine('handlebars', handlebars.engine());
-app.set("views", path.join(__dirname, "views"));
-app.set('view engine', 'handlebars');
+
+//Configuración de handlebars
+app.engine("handlebars", handlebars.engine())
+//Usa la carpeta views como carpeta de vistas
+app.set("views", __dirname + "/views")
+//Usa handlebars como motor de plantillas
+app.set("view engine", "handlebars")
+//Usa los archivos dentro de la carpeta views
+app.use(express.static(__dirname, + "/views"))
+//Usa los archivos dentro de la carpeta public
+app.use(express.static(path.join(__dirname, 'public')));
+
 
 
 app.use("/api/products", productsRouter);
@@ -70,8 +85,30 @@ app.use("/api/sessions", usersRouter)
 app.use("/", viewsRouter)
 
 
+io.on('connection', (socket) => {
+  console.log('a user connected')
+  socket.on('newUser', (username) => {
+      users[socket.id] = username;
+      io.emit('userConnected', username);
+  });
+
+  socket.on('chatMessage', (message) => {
+      const username = users[socket.id];
+      io.emit('message', { username, message });
+  });
+
+
+  socket.on('disconnect', () => {
+      const username = users[socket.id];
+      delete users[socket.id];
+      io.emit('userDisconnected', username);
+  });
+});
+
+
 
 
 app.listen(PORT, () =>{
     console.log(`escuchando en el puerto ${PORT}`) 
 })
+

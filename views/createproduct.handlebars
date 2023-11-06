@@ -1,0 +1,63 @@
+<form method="post" action="/api/products">
+    <label for="titulo">Titulo</label>
+    <input type="text" name="titulo" required>
+
+    <label for="categoria">Categoria</label>
+    <input type="text" name="categoria" required>
+
+    <label for="precio">Precio</label>
+    <input type="number" name="precio" required>
+
+    <label for="stock">Stock</label>
+    <input type="number" name="stock" required>
+
+   
+    <button type="submit">Crear producto</button>
+</form>
+
+
+
+  <style>
+form {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f7f7f7;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button[type="submit"] {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+
+button[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+</style>

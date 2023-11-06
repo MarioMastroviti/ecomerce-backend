@@ -14,6 +14,8 @@ router.delete("/:cid/product/:pid", cartController.removeFromCart);
 router.delete("/:cid", cartController.clearCart)
 
 router.put("/:cid/product/:pid", cartController.updateCartItem)
+
+
    
 
 module.exports = router;
