@@ -9,6 +9,7 @@ document.getElementById('chat-form').addEventListener('submit', (e) => {
     socket.emit('chatMessage', message);
 });
 
+
 socket.on('message', (data) => {
     const chatMessages = document.getElementById('chat-messages');
     const messageElement = document.createElement('div');

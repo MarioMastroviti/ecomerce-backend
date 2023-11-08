@@ -1,16 +1,17 @@
 const { Router } = require('express')
 const router = Router();
 const productsController = require('../controllers/productController.js')
+const {isAdmin} = require('../middleware/authorize.js')
 
-router.get("/getProducts", productsController.getProducts);
+router.get("/", productsController.getProducts);
 
 router.get("/:pid", productsController.getProductById);
 
-router.post("/", productsController.createProduct);
+router.post("/createProduct",  productsController.createProduct);
 
-router.put("/:pid" , productsController.updateProduct);
+router.put("/:pid" , isAdmin, productsController.updateProduct);
 
-router.delete("/:pid",productsController.deleteProduct);
+router.delete("/:pid", isAdmin, productsController.deleteProduct);
 
 
 module.exports = router

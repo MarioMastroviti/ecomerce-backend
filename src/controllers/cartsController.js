@@ -1,7 +1,14 @@
 const daoCart = require('../dao/classes/cart.dao')
 const CartDTO = require('../dao/DTOs/carts.dto');
+const daoProduct = require ('../dao/classes/products.dao');
+const { usersModel } = require('../dao/mongo/models/users.model');
+const daoTickets = require('../dao/classes/tickets.dao'); 
+
+const ticketsDao = new daoTickets();
 
 const cartDao = new daoCart()
+const ProductDAO = new daoProduct()
+
 
 exports.getCartById = async (req, res) => {
     try {
@@ -114,4 +121,54 @@ exports.updateCartItem = async (req, res) => {
         res.status(500).json({ result: "error", error: "Error interno del servidor." });
     }
 };
+exports.purchaseCart = async (req, res) => {
+    try {
+        const { cid } = req.params;
+        const cart = await cartDao.getCartById(cid);
 
+        if (!cart) {
+            return res.status(404).json({ message: "Cart not found" });
+        }
+
+        const productsToPurchase = cart.products;
+        const productsToCreateTicket = [];
+        let totalAmount = 0;
+
+        for (const productToPurchase of productsToPurchase) {
+            const product = await ProductDAO.getProductById(productToPurchase.product._id);
+
+            if (product.stock >= productToPurchase.quantity) {
+                productsToCreateTicket.push({
+                    product: product,
+                    quantity: productToPurchase.quantity
+                });
+
+                totalAmount += productToPurchase.quantity * product.price;
+
+                product.stock -= productToPurchase.quantity;
+                await ProductDAO.updateProduct({ _id: product._id }, product);
+            } else {
+                console.log(`No hay suficiente stock para el producto ${product.title}`);
+            }
+        }
+
+        if (productsToCreateTicket.length > 0) {
+            const code = generateUniqueCode(6);
+            const purchaser = cartPurchase; // Asegúrate de que cartPurchase esté definido correctamente
+
+            const ticketInfo = {
+                code: code,
+                amount: totalAmount,
+                purchaser: purchaser
+            };
+
+            const ticket = await ticketsDao.createTicket(ticketInfo);
+            res.render('ticket', { ticket });
+        } else {
+            res.status(400).json({ mensaje: 'No hay suficiente stock para comprar ningún producto' });
+        }
+    } catch (error) {
+        console.error('Se ha producido un error:', error);
+        res.status(500).json({ mensaje: 'Error interno del servidor' });
+    }
+}

@@ -4,34 +4,6 @@ const ProductDTO = require('../dao/DTOs/products.dto');
 
 const ProductDAO = new daoProduct()
 
-
-exports.createProduct = async (req, res) => {
-  try {
-      const { titulo, categoria, precio, stock, imagenes } = req.body;
-
-      if (!titulo || !categoria || !precio || !stock) {
-          return res.status(400).json({ result: "error", error: "Falta completar parámetros" });
-      }
-
-      const productDTO = new ProductDTO({
-          titulo,
-          categoria,
-          precio,
-          stock,
-          imagenes: imagenes || []
-      });
-
-      const result = await ProductDAO.createProduct(productDTO);
-
-      res.status(201).json({ result: "success", payload: result });
-  } catch (error) {
-      console.error(error);
-      res.status(500).json({ result: "error", message: "Internal Server Error" });
-  }
-};
-
-
-
 exports.getProducts = async (req, res) => {
   try {
       const limit = parseInt(req.query.limit) || 10;
@@ -39,16 +11,11 @@ exports.getProducts = async (req, res) => {
       const sortOrder = req.query.sortOrder || "asc";
       const filtro = req.query.filtro;
 
-      const productsData = await ProductDAO.getProducts({ filtro, limit, page, sortOrder });
+      const products = await ProductDAO.getProducts({ filtro, limit, page, sortOrder });
 
-    
+      const productsDTO = products.map(product => new ProductDTO(product));
 
-      if (Array.isArray(productsData)) {
-        const productsDTO = productsData.map(product => new ProductDTO(product));
-        res.send({ result: "success", payload: productsDTO });
-      } else {
-        res.send({ result: "success", payload: [] }); 
-      }
+      res.send({ result: "success", payload: productsDTO });
   } catch (error) {
       console.log(error);
       res.status(500).send({ result: "error", message: "Internal Server Error" });
@@ -72,7 +39,37 @@ exports.getProducts = async (req, res) => {
     }
   };
 
- 
+  exports.createProduct = async (req, res) => {
+    try {
+        const { titulo, categoria, precio, stock, imagenes } = req.body;
+
+        if (!titulo || !categoria || !precio || !stock) {
+            return res.status(400).json({ result: "error", error: "Falta completar parámetros" });
+        }
+
+        const usuarioActual = req.user; 
+
+        if (usuarioActual.role !== 'admin') {
+            return res.status(403).json({ result: "error", error: "Acceso denegado. Debes ser administrador." });
+        }
+
+        const productDTO = new ProductDTO({
+            titulo,
+            categoria,
+            precio,
+            stock,
+            imagenes: imagenes || []
+        });
+
+        const result = await ProductDAO.createProduct(productDTO);
+
+        res.status(201).json({ result: "success", payload: result });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ result: "error", message: "Internal Server Error" });
+    }
+};
+
 
   exports.updateProduct = async (req, res) => {
     try {
@@ -102,4 +99,4 @@ exports.getProducts = async (req, res) => {
       console.error(error);
       res.status(500).json({ result: "error", message: "Error interno del servidor" });
     }
-  };
+  }

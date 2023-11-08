@@ -1,0 +1,22 @@
+<div class="container">
+    <div class="receipt">
+        <h1>TIENDA</h1>
+        
+        <div class="transactionDetails">
+            <div class="detail">{{tickets.code}}</div>
+        </div>
+        <div class="transactionDetails">
+            Compra usuario: {{tickets.purchase}}
+        </div>
+        <div class="centerItem bold">
+            <div class="item">ExtraCare Card #: *********4242</div>
+        </div>
+        {{#each tickets.products}}
+        <div class="transactionDetails">
+            <div class="detail">{{this.quantity}}</div>
+            <div class="detail">{{this.product.title}}</div>
+            <div class="detail">{{this.product.price}}$</div>
+        </div>
+        {{/each}}
+    </div>
+</div>

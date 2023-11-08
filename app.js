@@ -15,16 +15,17 @@ const cookieParser = require('cookie-parser')
 const initializePassport = require("./src/config/passport.config");
 const flash = require('connect-flash');
 require('dotenv').config()
-const http = require('http');
 const Swal = require('sweetalert2');
-const socketIo = require('socket.io');
+const http = require('http');
+const { Server } = require('socket.io'); 
 const server = http.createServer(app);
-const io = socketIo(server);
+const io = new Server(server);
+
 
 const PORT =  process.env.PORT;
 
 app.use(express.json());
-app.use(express.static(__dirname + '/src/public'));
+app.use(express.static(__dirname + '/public'));
 
 
 
@@ -75,14 +76,16 @@ app.set("view engine", "handlebars")
 //Usa los archivos dentro de la carpeta views
 app.use(express.static(__dirname, + "/views"))
 //Usa los archivos dentro de la carpeta public
-app.use(express.static(path.join(__dirname, 'public')));
-
+app.use(express.static(path.join(__dirname,   'src/public')));
 
 
 app.use("/api/products", productsRouter);
 app.use("/api/cart", cartRouter)
 app.use("/api/sessions", usersRouter)
 app.use("/", viewsRouter)
+
+
+
 
 
 io.on('connection', (socket) => {
@@ -97,7 +100,6 @@ io.on('connection', (socket) => {
       io.emit('message', { username, message });
   });
 
-
   socket.on('disconnect', () => {
       const username = users[socket.id];
       delete users[socket.id];
@@ -111,4 +113,3 @@ io.on('connection', (socket) => {
 app.listen(PORT, () =>{
     console.log(`escuchando en el puerto ${PORT}`) 
 })
-
