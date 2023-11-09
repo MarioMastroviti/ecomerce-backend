@@ -42,28 +42,8 @@ const usersSchema = new mongoose.Schema({
     }
 })
 
-async function cambiarRole(userId, nuevoRole) {
-    try {
-      
-      const user = await usersModel.findById(userId);
-  
-      if (!user) {
-        throw new Error('Usuario no encontrado');
-      }
-  
-       user.role = nuevoRole;
-  
-      
-      await user.save();
-  
-      return { status: 'success', message: 'Rol cambiado exitosamente' };
-    } catch (error) {
-      console.error('Error al cambiar el rol del usuario:', error);
-      return { status: 'error', error: 'Error interno del servidor' };
-    }
-  }
 
 
 const usersModel = mongoose.model(usersCollection, usersSchema)
 
-module.exports = { usersModel, cambiarRole }
+

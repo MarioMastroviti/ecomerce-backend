@@ -6,9 +6,9 @@ const { isUser } = require('../middleware/authorize.js');
 
 router.get("/:cid", cartController.getCartById)
 
-router.post("/", isUser, cartController.createCart)
+router.post("/",  cartController.createCart)
 
-router.put("/:cid", isUser, cartController.addToCart);
+router.put("/:cid",  cartController.addToCart);
 
 router.delete("/:cid/product/:pid", isUser, cartController.removeFromCart);
 

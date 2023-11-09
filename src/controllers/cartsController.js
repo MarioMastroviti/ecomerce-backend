@@ -10,6 +10,8 @@ const cartDao = new daoCart()
 const ProductDAO = new daoProduct()
 
 
+
+
 exports.getCartById = async (req, res) => {
     try {
         const { cid } = req.params;
@@ -131,39 +133,29 @@ exports.purchaseCart = async (req, res) => {
         }
 
         const productsToPurchase = cart.products;
-        const productsToCreateTicket = [];
-        let totalAmount = 0;
+        const cartPurchase = cart.userId;
 
-        for (const productToPurchase of productsToPurchase) {
-            const product = await ProductDAO.getProductById(productToPurchase.product._id);
+        const productAvaible = productsToPurchase.filter(p => p.product.stock !== 0);
+        const productNoAvaible = productsToPurchase.filter(p => p.product.stock === 0);
 
-            if (product.stock >= productToPurchase.quantity) {
-                productsToCreateTicket.push({
-                    product: product,
-                    quantity: productToPurchase.quantity
-                });
+        productAvaible.forEach(async (p) => {
+            const productToSell = await ProductDAO.getProductById(p.product._id);
+            productToSell.stock = productToSell.stock - p.quantity;
+            await ProductDAO.updateProduct({ _id: p.product._id }, productToSell);
+        });
 
-                totalAmount += productToPurchase.quantity * product.price;
-
-                product.stock -= productToPurchase.quantity;
-                await ProductDAO.updateProduct({ _id: product._id }, product);
-            } else {
-                console.log(`No hay suficiente stock para el producto ${product.title}`);
-            }
-        }
-
-        if (productsToCreateTicket.length > 0) {
-            const code = generateUniqueCode(6);
-            const purchaser = cartPurchase; // Asegúrate de que cartPurchase esté definido correctamente
-
+        if (productAvaible.length > 0) {
             const ticketInfo = {
-                code: code,
-                amount: totalAmount,
-                purchaser: purchaser
+                code: 'll', // O cualquier valor de código que desees asignar
+                amount: productsToPurchase.reduce((acc, productToPurchase) => {
+                    acc += productToPurchase.precio * productToPurchase.quantity;
+                    return acc;
+                }, 0),
+                purchaser: cartPurchase
             };
-
+            
             const ticket = await ticketsDao.createTicket(ticketInfo);
-            res.render('ticket', { ticket });
+            res.status(201).json({ result: 'success', payload: ticket });
         } else {
             res.status(400).json({ mensaje: 'No hay suficiente stock para comprar ningún producto' });
         }
@@ -171,4 +163,4 @@ exports.purchaseCart = async (req, res) => {
         console.error('Se ha producido un error:', error);
         res.status(500).json({ mensaje: 'Error interno del servidor' });
     }
-}
+};

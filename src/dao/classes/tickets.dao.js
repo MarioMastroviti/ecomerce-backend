@@ -7,7 +7,7 @@ class TicketsDAO {
       const ticket = new Ticket({
         code,
         amount,
-        purchaser,
+        purchaser
       });
       await ticket.save();
       return new TicketDTO(ticket);

@@ -2,16 +2,13 @@ const TicketsDAO = require('../dao/classes/tickets.dao');
 
 const ticketsDao = new TicketsDAO();
 
-function generateUniqueCode(length) {
-    const min = 10 ** (length - 1);
-    const max = 10 ** length - 1;
-    return Math.floor(min + Math.random() * (max - min + 1)).toString();
-  }
+
+
 
 exports.createTicket = async (req, res) => {
   try {
-    const { amount, purchaser } = req.body;
-    const code = generateUniqueCode();
+    const {code, amount, purchaser } = req.body;
+ 
 
     const ticket = await ticketsDao.createTicket(code, amount, purchaser);
     res.status(201).json({ result: 'success', payload: ticket });
