@@ -8,6 +8,4 @@ router.post('/', ticketController.createTicket)
 router.get("/:tid", ticketController.getTicketById);
 
 
-
-
 module.exports = router;

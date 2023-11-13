@@ -1,0 +1,49 @@
+<!-- views/products.handlebars -->
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Productos Generados</title>
+    <link rel="stylesheet" type="text/css" href="/styles.css">
+</head>
+<body>
+    <h1>Productos Generados</h1>
+    <ul>
+        {{#each products}}
+            <li>
+                <strong>Nombre:</strong> {{this.title}} <br>
+                <strong>Descripcion:</strong> {{this.description}} <br>
+                <strong>Precio:</strong> ${{this.price}} <br>
+                <strong>Existencias:</strong> {{this.stock}} <br>
+                <strong>Categoría:</strong> {{this.category}} <br>
+                <hr>
+            </li>
+        {{/each}}
+    </ul>
+</body>
+</html>
+
+
+<style>
+    
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+h1 {
+    color: #333;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+}
+</style>

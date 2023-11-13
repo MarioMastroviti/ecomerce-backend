@@ -22,9 +22,9 @@ exports.getCartById = async (req, res) => {
         }
 
  
-        const cartDTO = new CartDTO(carritoBuscado);
+      
 
-        res.json({ result: 'success', payload: cartDTO });
+        res.json({ result: 'success', payload: carritoBuscado });
     } catch (error) {
         console.error("Error al obtener el carrito:", error);
         res.status(500).json({ result: "error", error: "Error interno del servidor" });

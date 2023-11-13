@@ -1,5 +1,9 @@
 const daoProduct = require ('../dao/classes/products.dao')
 const ProductDTO = require('../dao/DTOs/products.dto'); 
+const {CustomError} = require('../error/CustomError.js')
+const {generateUserErrorInfo, generateProductConsultErrorInfo} = require('../error/info.js');
+const ErrorCodes = require('../error/enums.js') 
+
 
 
 const ProductDAO = new daoProduct()
@@ -25,6 +29,15 @@ exports.getProducts = async (req, res) => {
   exports.getProductById = async (req, res) => {
     try {
       const { pid } = req.params;
+
+      if ( pid < 0) {
+        CustomError.createError({
+            name: 'Invalid Params',
+            cause: generateProductConsultErrorInfo(req.params.pid),
+            message: 'Error to get product by ID',
+            code: ErrorCodes.INVALID_PARAM
+        });
+    }
       
       const product = await ProductDAO.getProductById(pid);
   
@@ -43,15 +56,16 @@ exports.getProducts = async (req, res) => {
     try {
         const { titulo, categoria, precio, stock, imagenes } = req.body;
 
-        if (!titulo || !categoria || !precio || !stock) {
-            return res.status(400).json({ result: "error", error: "Falta completar parámetros" });
-        }
+        if (!titulo || !categoria || !precio || !stock ) {
+          const error = CustomError.createError({
+              name: 'product creation error',
+              cause: generateUserErrorInfo({ titulo, categoria, precio, stock }),
+              message: 'Error trying to create Product',
+              code: ErrorCodes.INVALID_TYPES_ERROR
+          });
 
-        const usuarioActual = req.user; 
-
-        if (usuarioActual.role !== 'admin') {
-            return res.status(403).json({ result: "error", error: "Acceso denegado. Debes ser administrador." });
-        }
+          throw error;
+      }
 
         const productDTO = new ProductDTO({
             titulo,

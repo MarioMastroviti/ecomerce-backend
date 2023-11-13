@@ -1,10 +1,11 @@
-const express = require ('express')
+const express = require('express')
 const app = express();
 const mongoose = require('mongoose');
-const  productsRouter = require('./src/routes/products.router');
+const productsRouter = require('./src/routes/products.router');
 const cartRouter = require('./src/routes/cart.router')
 const usersRouter = require('./src/routes/users.router')
 const viewsRouter = require('./src/routes/views.router')
+const {errorMiddleware} = require('./src/middleware/error')
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const handlebars = require('express-handlebars');
@@ -17,48 +18,50 @@ const flash = require('connect-flash');
 require('dotenv').config()
 const Swal = require('sweetalert2');
 const http = require('http');
-const { Server } = require('socket.io'); 
+const { Server } = require('socket.io');
+const { generateProducts } = require('./utils');
 const server = http.createServer(app);
+const errorHandler = require('./src/middleware/error/index')
 const io = new Server(server);
 
 
-const PORT =  process.env.PORT;
+const PORT = process.env.PORT;
 
 app.use(express.json());
 app.use(express.static(__dirname + '/public'));
 
 
 
-mongoose.connect(process.env.MONGODB_URL , {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+mongoose.connect(process.env.MONGODB_URL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
 })
-.then(() => {
+  .then(() => {
     console.log("Conexión exitosa a la base de datos");
-})
-.catch(error => {
+  })
+  .catch(error => {
     console.error("Error en la conexión a la base de datos", error);
-});
+  });
 
 
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(
-    session({
-      store: MongoStore.create({
-        mongoUrl: process.env.MONGODB_URL, 
-        ttl: 600,
-      }),
-      secret: process.env.clave_secreta,
-      resave: false,
-      saveUninitialized: true,
-    })
-  );
-  
+  session({
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGODB_URL,
+      ttl: 600,
+    }),
+    secret: process.env.clave_secreta,
+    resave: false,
+    saveUninitialized: true,
+  })
+);
 
-   
-  
+
+
+
 app.use(flash());
 
 initializePassport(passport)
@@ -76,40 +79,45 @@ app.set("view engine", "handlebars")
 //Usa los archivos dentro de la carpeta views
 app.use(express.static(__dirname, + "/views"))
 //Usa los archivos dentro de la carpeta public
-app.use(express.static(path.join(__dirname,   'src/public')));
+app.use(express.static(path.join(__dirname, 'src/public')));
+// uso del midlaware de errores
+app.use(errorHandler);
 
 
 app.use("/api/products", productsRouter);
 app.use("/api/cart", cartRouter)
 app.use("/api/sessions", usersRouter)
 app.use("/", viewsRouter)
-
-
+app.get('/api/mockingProducts/:numOfProducts', (req, res) => {
+  const numOfProducts = parseInt(req.params.numOfProducts);
+  const products = generateProducts(numOfProducts);
+  res.render('mockingProducts', { products });
+});
 
 
 
 io.on('connection', (socket) => {
   console.log('a user connected')
   socket.on('newUser', (username) => {
-      users[socket.id] = username;
-      io.emit('userConnected', username);
+    users[socket.id] = username;
+    io.emit('userConnected', username);
   });
 
   socket.on('chatMessage', (message) => {
-      const username = users[socket.id];
-      io.emit('message', { username, message });
+    const username = users[socket.id];
+    io.emit('message', { username, message });
   });
 
   socket.on('disconnect', () => {
-      const username = users[socket.id];
-      delete users[socket.id];
-      io.emit('userDisconnected', username);
+    const username = users[socket.id];
+    delete users[socket.id];
+    io.emit('userDisconnected', username);
   });
 });
 
 
 
 
-app.listen(PORT, () =>{
-    console.log(`escuchando en el puerto ${PORT}`) 
+app.listen(PORT, () => {
+  console.log(`escuchando en el puerto ${PORT}`)
 })

@@ -1,6 +1,5 @@
 const {usersModel, cambiarRole} = require('../mongo/models/users.model')
 const { createHash } = require('../../../utils');
-const passport = require("passport")
 
 
 class UserDao {

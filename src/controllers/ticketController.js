@@ -1,6 +1,9 @@
 const TicketsDAO = require('../dao/classes/tickets.dao'); 
 
 const ticketsDao = new TicketsDAO();
+const {CustomError} = require('../error/CustomError.js')
+const {generateUserErrorInfo} = require('../error/info.js');
+const ErrorCodes = require('../error/enums.js') 
 
 
 
@@ -9,6 +12,16 @@ exports.createTicket = async (req, res) => {
   try {
     const {code, amount, purchaser } = req.body;
  
+    if (!code || !amount || !purchaser) {
+      const error = CustomError.createError({
+          name: 'Ticket creation error',
+          cause: generateUserErrorInfo({ code, amount, purchaser }),
+          message: 'Error trying to create Ticket',
+          code: ErrorCodes.INVALID_TYPES_ERROR
+      });
+
+      throw error;
+  }
 
     const ticket = await ticketsDao.createTicket(code, amount, purchaser);
     res.status(201).json({ result: 'success', payload: ticket });

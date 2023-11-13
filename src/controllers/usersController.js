@@ -1,16 +1,25 @@
 const daoUser = require('../dao/classes/users.dao.js')
 const UsersDTO = require('../dao/DTOs/users.dto.js'); 
 const passport = require("passport")
+const {CustomError} = require('../error/CustomError.js')
+const {generateUserErrorInfo} = require('../error/info.js');
+const ErrorCodes = require('../error/enums.js') 
 
 
 const userDao = new daoUser()
-
 exports.registerUser = async (req, res) => {
     try {
         const { first_name, last_name, email, age, password } = req.body;
 
         if (!first_name || !last_name || !email || !age || !password) {
-            return res.status(400).json({ result: "error", error: 'Faltan datos.' });
+            const error = CustomError.createError({
+                name: 'User creation error',
+                cause: generateUserErrorInfo({ first_name, last_name, email, age, password }),
+                message: 'Error trying to create User',
+                code: ErrorCodes.INVALID_TYPES_ERROR
+            });
+
+            throw error;
         }
 
         const userDTO = new UsersDTO({
@@ -19,12 +28,9 @@ exports.registerUser = async (req, res) => {
             email,
             age,
             password
-            
         });
         
-
-       await userDao.createUser(userDTO)
-
+        await userDao.createUser(userDTO);
 
         res.redirect('/api/sessions/login');
     } catch (error) {
@@ -32,6 +38,7 @@ exports.registerUser = async (req, res) => {
         res.status(500).json({ result: "error", error: "Error interno del servidor" });
     }
 };
+
 
 
 
