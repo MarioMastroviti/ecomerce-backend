@@ -1,12 +1,13 @@
-const daoUser = require('../dao/classes/users.dao.js')
-const UsersDTO = require('../dao/DTOs/users.dto.js'); 
-const passport = require("passport")
-const {CustomError} = require('../error/CustomError.js')
-const {generateUserErrorInfo} = require('../error/info.js');
-const ErrorCodes = require('../error/enums.js') 
+const daoUser = require('../dao/classes/users.dao.js');
+const UsersDTO = require('../dao/DTOs/users.dto.js');
+const passport = require("passport");
+const { CustomError } = require('../error/CustomError.js');
+const { generateUserErrorInfo } = require('../error/info.js');
+const ErrorCodes = require('../error/enums.js');
+const { addLogger } = require('../utils/loggerCustom.js');
 
+const userDao = new daoUser();
 
-const userDao = new daoUser()
 exports.registerUser = async (req, res) => {
     try {
         const { first_name, last_name, email, age, password } = req.body;
@@ -29,19 +30,15 @@ exports.registerUser = async (req, res) => {
             age,
             password
         });
-        
+
         await userDao.createUser(userDTO);
 
         res.redirect('/api/sessions/login');
     } catch (error) {
-        console.error("Error al registrar usuario:", error);
+        req.logger.error("Error al registrar usuario:", error);
         res.status(500).json({ result: "error", error: "Error interno del servidor" });
     }
 };
-
-
-
-
 
 exports.failRegister = async (req, res) => {
     res.json({ error: "Usuario ya existente" });
@@ -72,7 +69,7 @@ exports.handleLogin = async (req, res) => {
         };
         res.redirect('/api/sessions/products');
     } catch (error) {
-        console.error("Error al iniciar sesión:", error);
+        req.logger.error("Error al iniciar sesión:", error);
         res.status(500).json({ result: "error", error: "Error interno del servidor" });
     }
 };
@@ -94,7 +91,7 @@ exports.restorePassword = async (req, res) => {
 
         res.redirect('/api/sessions/login');
     } catch (error) {
-        console.error("Error al restaurar la contraseña:", error);
+        req.logger.error("Error al restaurar la contraseña:", error);
         res.status(500).json({ result: "error", error: "Error interno del servidor" });
     }
 };
@@ -124,3 +121,4 @@ exports.changeUserRole = async (req, res) => {
         res.status(500).json({ result: "error", error: "Error interno del servidor" });
     }
 };
+

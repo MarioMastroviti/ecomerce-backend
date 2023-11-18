@@ -1,0 +1,12 @@
+warning: Alerta!!
+warn: Error in getProducts: products.map is not a function {"error":{}}
+warn: Error in getProductById: Cast to ObjectId failed for value "6531f7f2d3c149821b44f1f1yujj" (type string) at path "_id" for model "products" {"error":{"kind":"ObjectId","message":"Cast to ObjectId failed for value \"6531f7f2d3c149821b44f1f1yujj\" (type string) at path \"_id\" for model \"products\"","name":"CastError","path":"_id","reason":{},"stringValue":"\"6531f7f2d3c149821b44f1f1yujj\"","value":"6531f7f2d3c149821b44f1f1yujj","valueType":"string"}}
+warn: Warning log test
+warn: Warn log test
+warn: Warn log test
+warn: Error in getProductById: Cast to ObjectId failed for value "5" (type string) at path "_id" for model "products" {"error":{"kind":"ObjectId","message":"Cast to ObjectId failed for value \"5\" (type string) at path \"_id\" for model \"products\"","name":"CastError","path":"_id","reason":{},"stringValue":"\"5\"","value":"5","valueType":"string"}}
+warn: Error in getProductById: Cast to ObjectId failed for value "5" (type string) at path "_id" for model "products" {"error":{"kind":"ObjectId","message":"Cast to ObjectId failed for value \"5\" (type string) at path \"_id\" for model \"products\"","name":"CastError","path":"_id","reason":{},"stringValue":"\"5\"","value":"5","valueType":"string"}}
+warn: Warn log test
+warn: Warn log test
+warn: Warn log test
+

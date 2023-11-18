@@ -3,14 +3,11 @@ const CartDTO = require('../dao/DTOs/carts.dto');
 const daoProduct = require ('../dao/classes/products.dao');
 const { usersModel } = require('../dao/mongo/models/users.model');
 const daoTickets = require('../dao/classes/tickets.dao'); 
+const { addLogger } = require('../utils/loggerCustom');
 
 const ticketsDao = new daoTickets();
-
 const cartDao = new daoCart()
 const ProductDAO = new daoProduct()
-
-
-
 
 exports.getCartById = async (req, res) => {
     try {
@@ -21,12 +18,9 @@ exports.getCartById = async (req, res) => {
             return res.status(404).json({ result: 'error', error: 'Carrito no encontrado.' });
         }
 
- 
-      
-
         res.json({ result: 'success', payload: carritoBuscado });
     } catch (error) {
-        console.error("Error al obtener el carrito:", error);
+        req.logger.error("Error al obtener el carrito:", error);
         res.status(500).json({ result: "error", error: "Error interno del servidor" });
     }
 };
@@ -36,17 +30,14 @@ exports.createCart = async (req, res) => {
         const { uid } = req.body;
         const cart = await cartDao.createCart(uid);
 
-
         const cartDTO = new CartDTO(cart);
 
         res.status(201).json({ result: 'success', payload: cartDTO });
     } catch (error) {
-        console.error("Error al crear el carrito:", error);
+        req.logger.error("Error al crear el carrito:", error);
         res.status(500).json({ result: 'error', error: 'Error interno del servidor' });
     }
 };
-
-
 
 exports.addToCart = async (req, res) => {
     try {
@@ -61,7 +52,7 @@ exports.addToCart = async (req, res) => {
 
         res.status(200).json({ result: "success", payload: result.payload });
     } catch (error) {
-        console.error('Error al agregar el producto al carrito:', error);
+        req.logger.error('Error al agregar el producto al carrito:', error);
         res.status(500).json({ result: "error", error: "Error interno del servidor." });
     }
 };
@@ -79,7 +70,7 @@ exports.removeFromCart = async (req, res) => {
 
         res.status(200).json({ result: "success", payload: result.payload });
     } catch (error) {
-        console.error('Error al eliminar el producto del carrito:', error);
+        req.logger.error('Error al eliminar el producto del carrito:', error);
         res.status(500).json({ result: "error", error: "Error interno del servidor" });
     }
 };
@@ -95,7 +86,7 @@ exports.clearCart = async (req, res) => {
 
         res.status(200).json({ result: "success", payload: result.payload });
     } catch (error) {
-        console.error('Error al eliminar todos los productos del carrito:', error);
+        req.logger.error('Error al eliminar todos los productos del carrito:', error);
         res.status(500).json({ result: "error", error: "Error interno del servidor" });
     }
 };
@@ -119,10 +110,11 @@ exports.updateCartItem = async (req, res) => {
 
         res.status(200).json({ result: "success", payload: result.payload });
     } catch (error) {
-        console.error('Error al actualizar la cantidad del producto en el carrito:', error);
+        req.logger.error('Error al actualizar la cantidad del producto en el carrito:', error);
         res.status(500).json({ result: "error", error: "Error interno del servidor." });
     }
 };
+
 exports.purchaseCart = async (req, res) => {
     try {
         const { cid } = req.params;
@@ -148,19 +140,19 @@ exports.purchaseCart = async (req, res) => {
             const ticketInfo = {
                 code: 'll', // O cualquier valor de código que desees asignar
                 amount: productsToPurchase.reduce((acc, productToPurchase) => {
-                    acc += productToPurchase.precio * productToPurchase.quantity;
+                    acc += productToPurchase.product.precio * productToPurchase.quantity;
                     return acc;
                 }, 0),
                 purchaser: cartPurchase
             };
-            
+
             const ticket = await ticketsDao.createTicket(ticketInfo);
             res.status(201).json({ result: 'success', payload: ticket });
         } else {
             res.status(400).json({ mensaje: 'No hay suficiente stock para comprar ningún producto' });
         }
     } catch (error) {
-        console.error('Se ha producido un error:', error);
+        req.logger.error('Se ha producido un error:', error);
         res.status(500).json({ mensaje: 'Error interno del servidor' });
     }
 };

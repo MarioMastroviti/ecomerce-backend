@@ -15,13 +15,15 @@ const path = require('path')
 const cookieParser = require('cookie-parser')
 const initializePassport = require("./src/config/passport.config");
 const flash = require('connect-flash');
+const winston = require('winston')
 require('dotenv').config()
 const Swal = require('sweetalert2');
 const http = require('http');
 const { Server } = require('socket.io');
-const { generateProducts } = require('./utils');
+const { generateProducts } = require('./src/utils/utils.js');
 const server = http.createServer(app);
 const errorHandler = require('./src/middleware/error/index')
+const {addLogger} = require('./src/utils/loggerCustom.js')
 const io = new Server(server);
 
 
@@ -29,7 +31,7 @@ const PORT = process.env.PORT;
 
 app.use(express.json());
 app.use(express.static(__dirname + '/public'));
-
+app.use(addLogger);
 
 
 mongoose.connect(process.env.MONGODB_URL, {
@@ -83,15 +85,45 @@ app.use(express.static(path.join(__dirname, 'src/public')));
 // uso del midlaware de errores
 app.use(errorHandler);
 
+// Middleware de manejo de errores
+app.use((err, req, res, next) => {
+  logger.error(err); 
+
+
+  if (process.env.NODE_ENV === 'production') {
+    res.status(500).json({ error: 'Internal Server Error' });
+  } else {
+    res.status(500).json({ error: 'Internal Server Error', details: err.message });
+  }
+});
+
 
 app.use("/api/products", productsRouter);
 app.use("/api/cart", cartRouter)
 app.use("/api/sessions", usersRouter)
 app.use("/", viewsRouter)
+
+//endpoint para mocking dde generar productos
 app.get('/api/mockingProducts/:numOfProducts', (req, res) => {
   const numOfProducts = parseInt(req.params.numOfProducts);
   const products = generateProducts(numOfProducts);
   res.render('mockingProducts', { products });
+});
+
+//endpoint para probar logger
+app.get('/loggerTest', addLogger, async (req, res) => {
+  try {
+      req.logger.debug('Debug log test');
+      req.logger.info('Info log test');
+      req.logger.warn('Warn log test');
+      req.logger.error('Error log test');
+      req.logger.fatal('Fatal log test');
+
+      res.json({ result: 'success', message: 'Logger test completed' });
+  } catch (error) {
+      req.logger.error('Error in loggerTest:', error);
+      res.status(500).json({ result: 'error', error: 'Internal Server Error' });
+  }
 });
 
 
