@@ -8,7 +8,7 @@ router.get('/api/sessions/profile', (req, res) => {
     if (!req.session.user) {
         return res.redirect('/api/sessions/login');
     }
-
+    
     const { first_name, last_name, email, age } = req.session.user;
     res.render('profile', { first_name, last_name, email, age });
 });

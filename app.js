@@ -21,6 +21,8 @@ const Swal = require('sweetalert2');
 const http = require('http');
 const { Server } = require('socket.io');
 const { generateProducts } = require('./src/utils/utils.js');
+const emailRouter = require("./src/routes/mail.router.js")
+
 const server = http.createServer(app);
 const errorHandler = require('./src/middleware/error/index')
 const {addLogger} = require('./src/utils/loggerCustom.js')
@@ -102,6 +104,7 @@ app.use("/api/products", productsRouter);
 app.use("/api/cart", cartRouter)
 app.use("/api/sessions", usersRouter)
 app.use("/", viewsRouter)
+app.use("/api/email", emailRouter)
 
 //endpoint para mocking dde generar productos
 app.get('/api/mockingProducts/:numOfProducts', (req, res) => {
@@ -127,7 +130,6 @@ app.get('/loggerTest', addLogger, async (req, res) => {
 });
 
 
-
 io.on('connection', (socket) => {
   console.log('a user connected')
   socket.on('newUser', (username) => {
@@ -146,7 +148,6 @@ io.on('connection', (socket) => {
     io.emit('userDisconnected', username);
   });
 });
-
 
 
 

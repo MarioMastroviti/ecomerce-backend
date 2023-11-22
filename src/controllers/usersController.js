@@ -40,6 +40,7 @@ exports.registerUser = async (req, res) => {
     }
 };
 
+
 exports.failRegister = async (req, res) => {
     res.json({ error: "Usuario ya existente" });
 };
