@@ -1,0 +1,86 @@
+<h1>Lista de Productos</h1>
+
+{{#if showLink}}
+    <a href="/api/product/createProduct" class="create-link">Crear Producto</a>
+{{/if}}
+
+<ul>
+    {{#each products}}
+        <li>
+            <h2>{{titulo}}</h2>
+            <p>Categoría: {{categoria}}</p>
+            <p>Precio: {{precio}}</p>
+            <p>Stock: {{stock}}</p>
+            <p>id: {{_id}}</p>
+
+
+
+
+
+
+
+       
+
+
+{{#if showDeleteButton}}
+    <form method="POST" action="/api/product/{{_id}}?_method=DELETE">
+        <button type="submit" class="delete-button">Eliminar Producto</button>
+    </form>
+{{/if}}
+
+
+
+
+        </li>
+    {{/each}}
+</ul>
+
+<div class="pagination">
+    {{#if pagination.hasPrevPage}}
+        <a href="?page={{pagination.prevPage}}">Anterior</a>
+    {{/if}}
+
+    <span>Página {{pagination.page}} de {{pagination.totalPages}}</span>
+
+    {{#if pagination.hasNextPage}}
+        <a href="?page={{pagination.nextPage}}">Siguiente</a>
+    {{/if}}
+</div>
+
+
+
+<style>
+
+h1 {
+    font-size: 24px;
+    color: #333;
+    display: flex;
+    justify-content: center;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+}
+
+h2 {
+    font-size: 20px;
+    color: #007bff;
+}
+
+p {
+    font-size: 16px;
+    color: #555;
+    margin: 5px 0;
+}
+
+.create-link {
+    display: blo

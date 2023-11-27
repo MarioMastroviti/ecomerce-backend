@@ -37,11 +37,10 @@ const usersSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['user', 'admin'], 
+        enum: ['user', 'admin', 'premiun'], 
         default: 'user'
     }
 })
-
 
 
 const usersModel = mongoose.model(usersCollection, usersSchema)

@@ -11,9 +11,9 @@ const customLevelsOptions = {
 }
 
 const logger = winston.createLogger({
-    // ... otras opciones de configuración
+    
     format: winston.format.combine(
-        winston.format.colorize({ all: true }),  // Agrega esta línea para habilitar colores
+        winston.format.colorize({ all: true }),  
         winston.format.simple()
     ),
     transports: [

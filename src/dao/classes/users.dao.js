@@ -1,5 +1,6 @@
-const {usersModel, cambiarRole} = require('../mongo/models/users.model')
+const {usersModel} = require('../mongo/models/users.model')
 const { createHash } = require('../../utils/utils');
+
 
 
 class UserDao {
@@ -39,7 +40,7 @@ findUserByEmail = async(email) => {
 
 changeUserRole = async(userId, nuevoRole) =>{
         try {
-            const result = await cambiarRole(userId, nuevoRole);
+            const result = await usersModel.updateOne({ _id: userId }, { role: nuevoRole });
             return result;
         } catch (error) {
             throw error;

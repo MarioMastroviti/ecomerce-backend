@@ -4,13 +4,17 @@ const {CustomError} = require('../error/CustomError.js')
 const {generateUserErrorInfo, generateProductConsultErrorInfo} = require('../error/info.js');
 const ErrorCodes = require('../error/enums.js') 
 const {addLogger} = require('../utils/loggerCustom.js')
-
+const Swal = require('sweetalert2')
 
 
 const ProductDAO = new daoProduct()
 
 exports.getProducts = async (req, res, next) => {
   try {
+    if (!req.session.user) {
+      return res.redirect('/api/sessions/login');
+    }
+
     const limit = parseInt(req.query.limit) || 10;
     const page = parseInt(req.query.page) || 1;
     const sortOrder = req.query.sortOrder || 'asc';
@@ -18,12 +22,30 @@ exports.getProducts = async (req, res, next) => {
 
     const products = await ProductDAO.getProducts({ filtro, limit, page, sortOrder });
 
-    const productsDTO = products.docs.map((product) => new ProductDTO(product));
+    const productsDTO = products.docs.map((product) => {
+      const showDeleteButton = req.session.user.role === 'admin' || (product.owner === req.session.user.email);
+      return { ...new ProductDTO(product), showDeleteButton, _id: product._id.toString() };
+    });
 
-    res.send({ result: 'success', payload: productsDTO });
-  }  catch (error) {
-    req.logger.warn(`Error in getProducts: ${error.message}`, { error });
-      
+   
+    const showLink = req.session.user.role === 'admin' || req.session.user.role === 'premiun';
+
+    res.render('product', {
+      products: productsDTO,
+      showLink,
+      pagination: {
+        page: products.page,
+        totalPages: products.totalPages,
+        totalItems: products.totalDocs,
+        hasNextPage: products.hasNextPage,
+        hasPrevPage: products.hasPrevPage,
+        nextPage: products.nextPage,
+        prevPage: products.prevPage,
+      },
+    });
+
+  } catch (error) {
+    req.logger.error(`Error in getProducts: ${error.message}`, { error });
     next(error);
   }
 };
@@ -61,41 +83,48 @@ exports.getProductById = async (req, res) => {
     res.status(500).send({ result: 'error', message: 'Internal Server Error' });
   }
 };
+
+exports.getCreateProduct = async (req, res) => {
+  res.render('createProduct'); 
+};
+
 exports.createProduct = async (req, res) => {
   try {
-      
-      req.logger.info(`${req.method} en ${req.url} - ${new Date().toLocaleTimeString()}`);
+    req.logger.info(`${req.method} en ${req.url} - ${new Date().toLocaleTimeString()}`);
 
-      const { titulo, categoria, precio, stock, imagenes } = req.body;
+    const { titulo, categoria, precio, stock, imagenes } = req.body;
 
-      if (!titulo || !categoria || !precio || !stock) {
-          const error = CustomError.createError({
-              name: 'product creation error',
-              cause: generateUserErrorInfo({ titulo, categoria, precio, stock }),
-              message: 'Error trying to create Product',
-              code: ErrorCodes.INVALID_TYPES_ERROR
-          });
-
-          throw error;
-      }
-
-      const productDTO = new ProductDTO({
-          titulo,
-          categoria,
-          precio,
-          stock,
-          imagenes: imagenes || []
+    if (!titulo || !categoria || !precio || !stock) {
+      const error = CustomError.createError({
+        name: 'product creation error',
+        cause: generateUserErrorInfo({ titulo, categoria, precio, stock }),
+        message: 'Error trying to create Product',
+        code: ErrorCodes.INVALID_TYPES_ERROR,
       });
 
-      const result = await ProductDAO.createProduct(productDTO);
+      throw error;
+    }
+
+    const email = req.session.user.email;
+    const role = req.session.user.role;
+
+    const productDTO = new ProductDTO({
+      titulo,
+      categoria,
+      precio,
+      stock,
+      imagenes: imagenes || [],
+      owner: role === 'premiun' ? email : 'admin',
+    });
+
+    const result = await ProductDAO.createProduct(productDTO);
 
       res.status(201).json({ result: 'success', payload: result });
-  } catch (error) {
-     
-      req.logger.warn(`Error in createProduct: ${error.message}`, { error });
 
-      console.error(error);
-      res.status(500).json({ result: 'error', message: 'Internal Server Error' });
+  } catch (error) {
+    req.logger.warn(`Error in createProduct: ${error.message}`, { error });
+    console.error(error);
+    res.status(500).json({ result: 'error', message: 'Internal Server Error' });
   }
 };
 
@@ -125,18 +154,33 @@ exports.updateProduct = async (req, res) => {
 
 exports.deleteProduct = async (req, res) => {
   try {
-      
-      req.logger.info(`${req.method} en ${req.url} - ${new Date().toLocaleTimeString()}`);
+    req.logger.info(`${req.method} en ${req.url} - ${new Date().toLocaleTimeString()}`);
 
-      const { pid } = req.params;
-      const result = await ProductDAO.deleteProduct(pid);
-
-      res.status(204).json({ result: 'success', message: 'Producto eliminado exitosamente' });
-  } catch (error) {
+    const { pid } = req.params;
     
-      req.logger.warn(`Error in deleteProduct: ${error.message}`, { error });
 
-      console.error(error);
-      res.status(500).json({ result: 'error', message: 'Internal Server Error' });
+    const product = await ProductDAO.getProductById(pid);
+
+    if (!product) {
+      return res.status(404).json({ result: 'error', message: 'Producto no encontrado' });
+    }
+
+    const userRole = req.session.user.role;
+  
+
+    if (userRole === 'admin' || product.owner === req.session.user.email) {
+    
+
+      await ProductDAO.deleteProduct(pid);
+      return res.status(204).json({ result: 'success', message: 'Producto eliminado exitosamente' });
+    } else {
+      
+      return res.status(403).json({ result: 'error', message: 'No tienes permisos para eliminar este producto' });
+    }
+
+  } catch (error) {
+    req.logger.warn(`Error in deleteProduct: ${error.message}`, { error });
+    console.error(error);
+    res.status(500).json({ result: 'error', message: 'Internal Server Error' });
   }
 };

@@ -32,7 +32,11 @@ const productsSchema = new mongoose.Schema({
     imagenes: {
         type: Array,
         required: false
-    }
+    },
+    owner: {
+        type: String, 
+        required: true
+        }
 })
 productsSchema.plugin(mongoosePaginate)
 const productsModel = mongoose.model(productsCollection, productsSchema)

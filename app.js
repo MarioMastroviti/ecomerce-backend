@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express();
 const mongoose = require('mongoose');
-const productsRouter = require('./src/routes/products.router');
+const productsRouter = require('./src/routes/products.router.js');
 const cartRouter = require('./src/routes/cart.router')
 const usersRouter = require('./src/routes/users.router')
 const viewsRouter = require('./src/routes/views.router')
@@ -16,6 +16,7 @@ const cookieParser = require('cookie-parser')
 const initializePassport = require("./src/config/passport.config");
 const flash = require('connect-flash');
 const winston = require('winston')
+const methodOverride = require('method-override');
 require('dotenv').config()
 const Swal = require('sweetalert2');
 const http = require('http');
@@ -34,6 +35,8 @@ const PORT = process.env.PORT;
 app.use(express.json());
 app.use(express.static(__dirname + '/public'));
 app.use(addLogger);
+
+app.use(methodOverride('_method'));
 
 
 mongoose.connect(process.env.MONGODB_URL, {
@@ -100,7 +103,7 @@ app.use((err, req, res, next) => {
 });
 
 
-app.use("/api/products", productsRouter);
+app.use("/api/product", productsRouter);
 app.use("/api/cart", cartRouter)
 app.use("/api/sessions", usersRouter)
 app.use("/", viewsRouter)

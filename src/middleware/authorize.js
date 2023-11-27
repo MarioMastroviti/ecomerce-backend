@@ -14,4 +14,13 @@ const isAdmin = (req, res, next) => {
     }
   };
 
-  module.exports = {isAdmin, isUser}
+  const isPremiun = (req, res, next) => {
+    if (req.user && req.user.role === 'premiun') {
+      next(); 
+    } else {
+      res.status(403).json({ message: 'No tienes permisos de administrador.' });
+    }
+  };
+
+  module.exports = {isAdmin, isUser, isPremiun}
+  

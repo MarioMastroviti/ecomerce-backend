@@ -8,6 +8,28 @@ const { addLogger } = require('../utils/loggerCustom.js');
 
 const userDao = new daoUser();
 
+exports.getRestore = async (req, res) => {
+    res.render('restore'); 
+};
+
+
+exports.getLogin = async (req, res) => {
+    res.render('login'); 
+};
+
+exports.getRegister = async (req, res) => {
+    res.render('register'); 
+};
+
+exports.getProfile = async (req, res) => {
+    if (!req.session.user) {
+        return res.redirect('/api/sessions/login');
+    }
+    
+    const { first_name, last_name, email, age, role } = req.session.user;
+    res.render('profile', { first_name, last_name, email, age, role });
+    }
+
 exports.registerUser = async (req, res) => {
     try {
         const { first_name, last_name, email, age, password } = req.body;
@@ -66,9 +88,10 @@ exports.handleLogin = async (req, res) => {
             first_name: req.user.first_name,
             last_name: req.user.last_name,
             email: req.user.email,
-            age: req.user.age
+            age: req.user.age,
+            role:req.user.role
         };
-        res.redirect('/api/sessions/products');
+        res.redirect('/api/product');
     } catch (error) {
         req.logger.error("Error al iniciar sesión:", error);
         res.status(500).json({ result: "error", error: "Error interno del servidor" });
@@ -100,7 +123,6 @@ exports.restorePassword = async (req, res) => {
 
 
 
-
 exports.changeUserRole = async (req, res) => {
     try {
         const { userId } = req.params;
@@ -108,6 +130,13 @@ exports.changeUserRole = async (req, res) => {
 
         if (!userId || !nuevoRole) {
             return res.status(400).json({ result: 'error', error: 'Faltan datos' });
+        }
+
+        const rolesPermitidos = ['user', 'premiun', 'admin'];
+
+       
+        if (!rolesPermitidos.includes(nuevoRole)) {
+            return res.status(400).json({ result: 'error', error: 'Role no permitido' });
         }
 
         const result = await userDao.changeUserRole(userId, nuevoRole);
@@ -118,8 +147,7 @@ exports.changeUserRole = async (req, res) => {
             res.status(500).json(result);
         }
     } catch (error) {
-        console.error("Error al cambiar el rol del usuario:", error);
+        console.error("Error al cambiar el role del usuario:", error);
         res.status(500).json({ result: "error", error: "Error interno del servidor" });
     }
 };
-

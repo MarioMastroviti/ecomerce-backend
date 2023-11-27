@@ -23,18 +23,18 @@ getProductById = async (pid) =>  {
   }
   
 
-createProduct = async ({ titulo, categoria, precio, stock, imagenes }) => {
+createProduct = async ({ titulo, categoria, precio, stock, imagenes, owner }) => {
     try {
-      const result = await productsModel.create({ titulo, categoria, precio, stock, imagenes });
+      const result = await productsModel.create({ titulo, categoria, precio, stock, imagenes, owner });
       return result;
     } catch (error) {
       throw error; 
     }
   }
   
-  updateProduct = async (pid, { titulo, categoria, precio, stock, imagenes }) => {
+  updateProduct = async (pid, { titulo, categoria, precio, stock, imagenes, owner }) => {
     try {
-        const result = await productsModel.updateOne({ _id: pid }, { titulo, categoria, precio, stock, imagenes });
+        const result = await productsModel.updateOne({ _id: pid }, { titulo, categoria, precio, stock, imagenes, owner });
         return result;
     } catch (error) {
       throw error; 

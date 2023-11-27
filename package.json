@@ -11,6 +11,7 @@
     "express-handlebars": "^7.1.2",
     "express-session": "^1.17.3",
     "jsonwebtoken": "^9.0.2",
+    "method-override": "^3.0.0",
     "mongoose": "^7.6.4",
     "mongoose-paginate-v2": "^1.7.31",
     "nodemailer": "^6.9.7",
@@ -18,7 +19,7 @@
     "passport-github2": "^0.1.12",
     "passport-local": "^1.0.0",
     "socket.io": "^4.7.2",
-    "sweetalert2": "^11.9.0",
+    "sweetalert2": "^11.10.1",
     "winston": "^3.11.0"
   },
   "name": "e-comerce-backend",
