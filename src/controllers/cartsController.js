@@ -44,6 +44,21 @@ exports.addToCart = async (req, res) => {
         const { cid } = req.params;
         const { pid, quantity = 1 } = req.body;
 
+       
+        const userRole = req.session.user.role;
+
+        
+        const product = await ProductDAO.getProductById(pid);
+
+        if (!product) {
+            return res.status(404).json({ result: "error", error: "Producto no encontrado" });
+        }
+
+        
+        if (userRole === 'premium' && product.owner !== req.session.user.email) {
+            return res.status(403).json({ result: "error", error: "No puedes agregar productos creados por otros usuarios" });
+        }
+
         const result = await cartDao.addToCart(cid, pid, quantity);
 
         if (result.error) {

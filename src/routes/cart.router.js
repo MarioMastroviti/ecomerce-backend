@@ -1,7 +1,7 @@
 const { Router } = require('express')
 const router = Router();
 const cartController = require('../controllers/cartsController.js');
-const { isUser } = require('../middleware/authorize.js');
+const { isUser, isPremiun } = require('../middleware/authorize.js');
 
 
 
@@ -9,7 +9,7 @@ router.get("/:cid", cartController.getCartById)
 
 router.post("/", isUser, cartController.createCart)
 
-router.put("/:cid", isUser, cartController.addToCart);
+router.put("/:cid",isUser, isPremiun,  cartController.addToCart);
 
 router.delete("/:cid/product/:pid", isUser, cartController.removeFromCart);
 

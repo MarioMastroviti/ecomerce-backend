@@ -151,13 +151,11 @@ exports.updateProduct = async (req, res) => {
       res.status(500).json({ result: 'error', message: 'Internal Server Error' });
   }
 };
-
 exports.deleteProduct = async (req, res) => {
   try {
     req.logger.info(`${req.method} en ${req.url} - ${new Date().toLocaleTimeString()}`);
 
     const { pid } = req.params;
-    
 
     const product = await ProductDAO.getProductById(pid);
 
@@ -166,15 +164,12 @@ exports.deleteProduct = async (req, res) => {
     }
 
     const userRole = req.session.user.role;
-  
 
     if (userRole === 'admin' || product.owner === req.session.user.email) {
-    
-
       await ProductDAO.deleteProduct(pid);
-      return res.status(204).json({ result: 'success', message: 'Producto eliminado exitosamente' });
+      return res.status(200).json({ result: 'success', message: 'Producto eliminado exitosamente' });
+  
     } else {
-      
       return res.status(403).json({ result: 'error', message: 'No tienes permisos para eliminar este producto' });
     }
 
