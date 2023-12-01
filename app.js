@@ -19,11 +19,12 @@ const winston = require('winston')
 const methodOverride = require('method-override');
 require('dotenv').config()
 const Swal = require('sweetalert2');
+const swaggerJsDoc = require('swagger-jsdoc')
+const swaggerUiExpress = require('swagger-ui-express')
 const http = require('http');
 const { Server } = require('socket.io');
 const { generateProducts } = require('./src/utils/utils.js');
 const emailRouter = require("./src/routes/mail.router.js")
-
 const server = http.createServer(app);
 const errorHandler = require('./src/middleware/error/index')
 const {addLogger} = require('./src/utils/loggerCustom.js')
@@ -89,6 +90,24 @@ app.use(express.static(__dirname, + "/views"))
 app.use(express.static(path.join(__dirname, 'src/public')));
 // uso del midlaware de errores
 app.use(errorHandler);
+
+//configuracion de swagger
+const swaggerOptions= {
+  definition: {
+      openapi: '3.0.1',
+      info: {
+          title: 'Documentación',
+          description: 'Api clase swagger'
+      }
+  },
+  apis: ['src/docs/products.yaml', 'src/docs/cart.yaml']
+
+}
+
+const specs = swaggerJsDoc(swaggerOptions);
+app.use('/apiDocs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
+
+
 
 // Middleware de manejo de errores
 app.use((err, req, res, next) => {

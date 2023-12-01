@@ -15,9 +15,7 @@ const productsSchema = new mongoose.Schema({
     categoria: {
         type: String,
         required: true,
-        max: 20,
-               
-    },
+        max: 20},
 
     precio: {
         type: Number,
@@ -28,7 +26,7 @@ const productsSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-
+    
     imagenes: {
         type: Array,
         required: false
