@@ -26,6 +26,7 @@ const { Server } = require('socket.io');
 const { generateProducts } = require('./src/utils/utils.js');
 const emailRouter = require("./src/routes/mail.router.js")
 const server = http.createServer(app);
+const multer = require('multer');
 const errorHandler = require('./src/middleware/error/index')
 const {addLogger} = require('./src/utils/loggerCustom.js')
 const io = new Server(server);

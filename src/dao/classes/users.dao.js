@@ -3,6 +3,7 @@ const { createHash } = require('../../utils/utils');
 
 
 
+
 class UserDao {
     
     createUser = async ({ first_name, last_name, email, age, password }) => {
@@ -48,6 +49,21 @@ changeUserRole = async(userId, nuevoRole) =>{
     }
 
 
+    postFiles = async (uid, name, file) => {
+        try {
+            const result = await usersModel.findOneAndUpdate(
+                { _id: uid },
+                { $push: { documents: { name, reference: file } } },
+                { new: true }
+            );
+            return result;
+        } catch (error) {
+            console.error('Error al procesar la carga de archivos en el DAO:', error);
+            return null;
+        }
+    };
+    
+    
 }
 
 module.exports = UserDao;

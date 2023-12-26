@@ -5,6 +5,8 @@ const { CustomError } = require('../error/CustomError.js');
 const { generateUserErrorInfo } = require('../error/info.js');
 const ErrorCodes = require('../error/enums.js');
 const { addLogger } = require('../utils/loggerCustom.js');
+const { upload } = require('../config/multer.js');
+
 
 const userDao = new daoUser();
 
@@ -151,3 +153,25 @@ exports.changeUserRole = async (req, res) => {
         res.status(500).json({ result: "error", error: "Error interno del servidor" });
     }
 };
+
+
+exports.postFiles = async (req, res) => {
+    try {
+      const { uid } = req.params;
+      const { name } = req.body;
+      const file = req.file;
+  
+      const result = await userDao.postFiles(uid, name, file);
+  
+      if (result) {
+        res.status(200).send({ result: "Success" });
+      } else {
+        res.status(500).send({ error: 'Error al procesar la carga de archivos en el servidor.' });
+      }
+    } catch (error) {
+      console.error("Error al procesar la carga de archivos:", error);
+      res.status(500).send({ error: 'Error interno del servidor.' });
+    }
+  };
+  
+  
