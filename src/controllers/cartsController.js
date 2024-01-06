@@ -1,9 +1,9 @@
 const daoCart = require('../dao/classes/cart.dao')
 const CartDTO = require('../dao/DTOs/carts.dto');
 const daoProduct = require ('../dao/classes/products.dao');
-const { usersModel } = require('../dao/mongo/models/users.model');
 const daoTickets = require('../dao/classes/tickets.dao'); 
 const { addLogger } = require('../utils/loggerCustom');
+const { cartModel } = require('../dao/mongo/models/cart.model');
 
 const ticketsDao = new daoTickets();
 const cartDao = new daoCart()
@@ -27,10 +27,14 @@ exports.getCartById = async (req, res) => {
 };
 
 
+
 exports.createCart = async (req, res) => {
     try {
         const { userId } = req.params;
         const cart = await cartDao.createCart(userId);
+
+        // Guardar el ID del carrito en la sesión del usuario
+        req.session.cartId = cart._id;
 
         const cartDTO = new CartDTO(cart);
 
@@ -44,22 +48,21 @@ exports.createCart = async (req, res) => {
 
 exports.addToCart = async (req, res) => {
     try {
-        const { cartId } = req.params;
-        const { pid, quantity = 1 } = req.body;
+        const { pid, cid } = req.params;
+        const { quantity = 1 } = req.body;
 
-       
-        const userRole = req.session.user.role;
+        const cartId = req.session.cartId;
+        console.log(cartId)
 
-        
+
         const product = await ProductDAO.getProductById(pid);
 
         if (!product) {
             return res.status(404).json({ result: "error", error: "Producto no encontrado" });
         }
 
-        
-        if (userRole === 'premium' && product.owner !== req.session.user.email) {
-            return res.status(403).json({ result: "error", error: "No puedes agregar productos creados por otros usuarios" });
+        if (product.stock < quantity) {
+            return res.status(400).json({ result: "error", error: `Stock insuficiente, stock disponible: ${product.stock}` });
         }
 
         const result = await cartDao.addToCart(cartId, pid, quantity);
@@ -74,6 +77,7 @@ exports.addToCart = async (req, res) => {
         res.status(500).json({ result: "error", error: "Error interno del servidor." });
     }
 };
+
 
 
 exports.removeFromCart = async (req, res) => {

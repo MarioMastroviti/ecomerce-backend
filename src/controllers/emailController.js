@@ -18,8 +18,6 @@ async function postEmail(req, res) {
     return res.status(400).send("Dirección de correo electrónico no válida");
   }
 
-
-
   const token = jwt.sign({ email }, process.env.JWTPASS, { expiresIn: "1h" });
 
   const mailOptions = {

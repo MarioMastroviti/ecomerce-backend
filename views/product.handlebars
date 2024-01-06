@@ -5,6 +5,7 @@
 {{#if showLink}}
 <a href="/api/product/createProduct" class="create-link">Crear Producto</a>
 {{/if}}
+<a href="/api/cart/{{cartId}}" class="cart-link">Ver Carrito</a>
 
 <ul>
     {{#each products}}
@@ -16,10 +17,6 @@
         <label for="quantity-{{_id}}">Cantidad:</label>
         <input type="number" id="quantity-{{_id}}" class="quantity-input" value="1" min="1">
         <button class="add-cart" data-product-id="{{_id}}">Agregar al carrito</button>
-
-
-
-
 
         {{#if showDeleteButton}}
         <form method="POST" action="/api/product/{{_id}}?_method=DELETE">
@@ -43,100 +40,27 @@
     {{/if}}
 </div>
 
-
-<!--
 <script>
     document.addEventListener('click', async function (event) {
-    if (event.target.classList.contains('add-cart')) {
-       const productId = event.target.dataset.productId;
- // Obtener el valor de la cantidad desde el campo de entrada
-        const quantityInput = document.getElementById(`quantity-${productId}`);
-        const quantity = quantityInput ? parseInt(quantityInput.value) : 1;
-
-        try {
-console.log("Usuario autenticado:", {{ isAuthenticated }});
-            if (!{{ isAuthenticated }}) {
-                // Puedes mostrar un mensaje de alerta o redirigir a la página de inicio de sesión
-                alert('Debes iniciar sesión para agregar productos al carrito');
-                return;
-            }
-
-            // Obtener información sobre el carrito actual del usuario
-            const cartResponse = await fetch(`/api/cart/${{ cartAutheticated }}`);
-            const cartResult = await cartResponse.json();
-
-            if (!cartResponse.ok || !cartResult.payload) {
-                // Manejar el caso en el que el usuario no tiene un carrito
-                alert('Error al obtener información del carrito');
-                return;
-            }
-
-            // Confirmar la acción antes de agregar el producto al carrito
-            const confirmAction = confirm('¿Seguro que deseas agregar este producto al carrito?');
-
-            if (!confirmAction) {
-                return;
-            }
-
-            // Agregar el producto al carrito
-            const response = await fetch(`/api/cart/${{ isAuthenticated._id }}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ pid: productId, quantity: quantity }),
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                alert('Producto agregado al carrito correctamente');
-
-                // Aquí puedes actualizar la interfaz de usuario para reflejar que el producto se agregó al carrito
-            } else {
-                alert('Error al agregar el producto al carrito: ' + result.error);
-                // Maneja el error de agregar el producto al carrito
-            }
-        } catch (error) {
-            alert('Error al agregar el producto al carrito');
-            console.error('Error al agregar el producto al carrito:', error);
-        }
-    }
-});
-
-</script>
-
--->
-
-<script>
-    document.addEventListener('click', async function (event) {
+        console.log('Clic en algún lugar de la página');
         if (event.target.classList.contains('add-cart')) {
-            const productId = event.target.dataset.productId;
-            const quantityInput = document.getElementById(`quantity-${productId}`);
-            const quantity = quantityInput ? parseInt(quantityInput.value) : 1;
-            const userId = "{{ userId }}"; // Asegúrate de tener el userId disponible en tu página
-            
             try {
-                // Obtener el carrito del usuario
-                const cartResponse = await fetch(`/api/cart/${userId}`);
-                const cartResult = await cartResponse.json();
-                console.log(cartResult);
-
-                // Agregar el producto al carrito
-                const addToCartResponse = await fetch(`/api/cart/${userId}`, {
+                const pid = event.target.dataset.productId;
+                const quantityInput = document.getElementById(`quantity-${pid}`);
+                const quantity = quantityInput ? parseInt(quantityInput.value) : 1;
+                const cid = '{{ cartId }}';
+                const response = await fetch(`/api/cart/${cid}/${pid}`, {
                     method: 'PUT',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ pid: productId, quantity: quantity }),
+                    body: JSON.stringify({ quantity: quantity })
                 });
-
-                const addToCartResult = await addToCartResponse.json();
-
-                if (addToCartResponse.ok) {
-                    console.log(addToCartResult.message);
+                const result = await response.json();
+                if (response.ok) {
+                    console.log(result.message);
                 } else {
-                    console.error(addToCartResult.error);
+                    console.error(result.error);
                 }
             } catch (error) {
                 console.error('Error al agregar el producto al carrito:', error);
@@ -144,8 +68,6 @@ console.log("Usuario autenticado:", {{ isAuthenticated }});
         }
     });
 </script>
-
-
 
 
 

@@ -27,31 +27,42 @@ class cartDao {
         }
     }
 
-    addToCart = async (cartId, productId, quantity = 1) =>{
+    addToCart = async (cartId, productId, quantity = 1) => {
         try {
             const carrito = await cartModel.findOne({ _id: cartId });
             const product = await productsModel.findOne({ _id: productId });
-
+    
             if (!product || !carrito) {
                 return { error: "Producto o carrito no encontrado" };
             }
-
+    
             const existingProduct = carrito.products.find(item => item && item.product && item.product.equals(productId));
-
+    
             if (existingProduct) {
                 existingProduct.quantity += quantity;
             } else {
                 carrito.products.push({ product: productId, quantity: quantity });
             }
-
+    
+            // Calcular totalPrice
+            let totalPrice = 0;
+            carrito.products.map((p) => {
+                const productPrice = p.product.price || 0;
+                totalPrice += productPrice * p.quantity;
+            });
+    
+            // Actualizar totalPrice en el carrito
+            carrito.totalPrice = totalPrice;
+    
             await cartModel.updateOne({ _id: cartId }, carrito);
-
+    
             return { success: true, payload: carrito };
         } catch (error) {
             console.error('Error al agregar el producto al carrito:', error);
             return { error: "Error interno del servidor" };
         }
-    }
+    };
+
 
     removeFromCart = async (cartId, productId) => {
         try {
