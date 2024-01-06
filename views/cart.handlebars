@@ -5,32 +5,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carrito de Compras</title>
-    <link rel="stylesheet" href="/styles/cart.css">
-    <!-- Si tienes un archivo de estilos para el carrito, puedes enlazarlo aquí -->
+
 </head>
 
 <body>
-    <h1>Carrito de Compras</h1>
+  <h1>Carrito de Compras</h1>
 
-    {{#if carrito}}
+    {{#if cart}}
     <p>Detalles del carrito:</p>
     <ul>
-          {{#each carrito.products}}
+          {{#each cart.products}}
                 <li>
                     <strong>{{this.product.titulo}}</strong>
                     <span>Cantidad: {{this.quantity}}</span>
-                    <span>Precio unitario: {{this.product.precio}}</span>
+                    <span>Precio unitario: {{product.precio}}</span>
                 </li>
             {{/each}}
     </ul>
+
 
     <button class="purchase-cart">Comprar</button>
     {{else}}
     <p>El carrito está vacío.</p>
     {{/if}}
 
+</body>
 </html>
 
+
+</html>
 
 
 <style>

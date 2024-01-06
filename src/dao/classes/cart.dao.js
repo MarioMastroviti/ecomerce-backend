@@ -16,6 +16,20 @@ class cartDao {
         }
     }
 
+    
+  getPopulatedCart = async (cartId) => {
+    try {
+      const cart = await cartModel
+        .findOne({ _id: cartId })
+        .populate('products.product'); // Pobla la referencia a 'product'
+
+      return cart;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+
 
     createCart = async (userId) =>{
         try {

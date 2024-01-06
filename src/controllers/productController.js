@@ -4,17 +4,18 @@ const {CustomError} = require('../error/CustomError.js')
 const {generateUserErrorInfo, generateProductConsultErrorInfo} = require('../error/info.js');
 const ErrorCodes = require('../error/enums.js') 
 const {addLogger} = require('../utils/loggerCustom.js')
-const Swal = require('sweetalert2')
 
 
 const ProductDAO = new daoProduct()
 
 exports.getProducts = async (req, res, next) => {
   try {
-    if (!req.session.user) {
+    if (!req.session.user || !req.session.user.cart) {
       return res.redirect('/api/sessions/login');
     }
 
+    const cartId = req.session.user.cart._id;
+    
     const limit = parseInt(req.query.limit) || 10;
     const page = parseInt(req.query.page) || 1;
     const sortOrder = req.query.sortOrder || 'asc';
@@ -35,6 +36,7 @@ exports.getProducts = async (req, res, next) => {
     res.render('product', {
       products: productsDTO,
       showLink,
+      cartId,
       pagination: {
         page: products.page,
         totalPages: products.totalPages,

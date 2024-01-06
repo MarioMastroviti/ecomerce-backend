@@ -32,8 +32,9 @@ const usersSchema = new mongoose.Schema({
         min: 3
     },
     cart: {
-        type: mongoose.Schema.Types.Mixed,
-        default: {}
+        type: mongoose.Schema.Types.ObjectId,  
+        ref: "cart",  
+        default: null  
     },
     role: {
         type: String,

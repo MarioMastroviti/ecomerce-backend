@@ -25,8 +25,8 @@ exports.getProfile = async (req, res) => {
         return res.redirect('/api/sessions/login');
     }
     
-    const { first_name, last_name, email, age, role } = req.session.user;
-    res.render('profile', { first_name, last_name, email, age, role });
+    const { first_name, last_name, email, age, role, cart } = req.session.user;
+    res.render('profile', { first_name, last_name, email, age, role, cart });
     }
 
 exports.registerUser = async (req, res) => {
@@ -72,7 +72,6 @@ exports.loginUser = async (req, res, next) => {
         failureFlash: true
     })(req, res, next);
 };
-
 exports.handleLogin = async (req, res) => {
     try {
         if (!req.user) {
@@ -82,21 +81,27 @@ exports.handleLogin = async (req, res) => {
             }
             return res.status(400).json({ result: "error", error: errorMessage || "Usuario no encontrado" });
         }
+
         const user = await userDao.updateLastConnection(req.user._id);
+        const populatedCartUser = await userDao.populateUserCart(user);
 
         req.session.user = {
-            first_name: req.user.first_name,
-            last_name: req.user.last_name,
-            email: req.user.email,
-            age: req.user.age,
-            role:req.user.role
+            first_name: populatedCartUser.first_name,
+            last_name: populatedCartUser.last_name,
+            email: populatedCartUser.email,
+            age: populatedCartUser.age,
+            role: populatedCartUser.role,
+            cart: populatedCartUser.cart
         };
+
         res.redirect('/api/product');
     } catch (error) {
         req.logger.error("Error al iniciar sesión:", error);
         res.status(500).json({ result: "error", error: "Error interno del servidor" });
     }
 };
+
+
 
 exports.restorePassword = async (req, res) => {
     const { email, new_password, confirm_password } = req.body;

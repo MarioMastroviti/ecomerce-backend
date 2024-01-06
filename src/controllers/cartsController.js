@@ -2,8 +2,8 @@ const daoCart = require('../dao/classes/cart.dao')
 const CartDTO = require('../dao/DTOs/carts.dto');
 const daoProduct = require ('../dao/classes/products.dao');
 const daoTickets = require('../dao/classes/tickets.dao'); 
-const { addLogger } = require('../utils/loggerCustom');
-const { cartModel } = require('../dao/mongo/models/cart.model');
+const { usersModel } = require('../dao/mongo/models/users.model');
+
 
 const ticketsDao = new daoTickets();
 const cartDao = new daoCart()
@@ -12,14 +12,16 @@ const ProductDAO = new daoProduct()
 
 exports.getCartById = async (req, res) => {
     try {
-        const { cid } = req.params;
-        const carritoBuscado = await cartDao.getCartById(cid);
+        const { cartId } = req.params;
+        const carritoBuscado = await cartDao.getPopulatedCart(cartId);
 
         if (!carritoBuscado) {
             return res.status(404).json({ result: 'error', error: 'Carrito no encontrado.' });
         }
 
-        res.json({ result: 'success', payload: carritoBuscado });
+        res.render('cart', { cart: carritoBuscado });
+
+       
     } catch (error) {
         req.logger.error("Error al obtener el carrito:", error);
         res.status(500).json({ result: "error", error: "Error interno del servidor" });
@@ -28,12 +30,13 @@ exports.getCartById = async (req, res) => {
 
 
 
+
+
 exports.createCart = async (req, res) => {
     try {
         const { userId } = req.params;
         const cart = await cartDao.createCart(userId);
 
-        // Guardar el ID del carrito en la sesión del usuario
         req.session.cartId = cart._id;
 
         const cartDTO = new CartDTO(cart);
@@ -45,15 +48,10 @@ exports.createCart = async (req, res) => {
     }
 };
 
-
 exports.addToCart = async (req, res) => {
     try {
-        const { pid, cid } = req.params;
+        const { pid, cartId } = req.params;
         const { quantity = 1 } = req.body;
-
-        const cartId = req.session.cartId;
-        console.log(cartId)
-
 
         const product = await ProductDAO.getProductById(pid);
 
@@ -65,6 +63,7 @@ exports.addToCart = async (req, res) => {
             return res.status(400).json({ result: "error", error: `Stock insuficiente, stock disponible: ${product.stock}` });
         }
 
+        // Aquí podrías llamar a tu función addToCart y obtener el resultado
         const result = await cartDao.addToCart(cartId, pid, quantity);
 
         if (result.error) {
@@ -77,6 +76,7 @@ exports.addToCart = async (req, res) => {
         res.status(500).json({ result: "error", error: "Error interno del servidor." });
     }
 };
+
 
 
 

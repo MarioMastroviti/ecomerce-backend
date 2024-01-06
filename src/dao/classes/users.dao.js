@@ -8,7 +8,7 @@ class UserDao {
 
     getAllUsers = async () => {
         try {
-            const users = await usersModel.find({}, { first_name: 1, last_name: 1, email: 1, age: 1, role: 1 });
+            const users = await usersModel.find({}, { first_name: 1, last_name: 1, email: 1, age: 1, role: 1, cart : 1});
             return users;
         } catch (error) {
             throw error;
@@ -46,6 +46,16 @@ class UserDao {
             throw error;
         }
     }
+    populateUserCart = async (uid) => {
+        try {
+            return await usersModel
+                .findOne({ _id: uid })
+                .populate('cart')  
+                .exec();
+        } catch (error) {
+            throw error;
+        }
+    };
 
     deleteUser = async (uid) => {
         try {
