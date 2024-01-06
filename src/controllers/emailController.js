@@ -19,6 +19,7 @@ async function postEmail(req, res) {
   }
 
 
+
   const token = jwt.sign({ email }, process.env.JWTPASS, { expiresIn: "1h" });
 
   const mailOptions = {

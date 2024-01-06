@@ -4,12 +4,11 @@ const cartController = require('../controllers/cartsController.js');
 const { isUser, isPremiun } = require('../middleware/authorize.js');
 
 
-
 router.get("/:cid", cartController.getCartById)
 
-router.post("/", isUser, cartController.createCart)
+router.post("/:userId", cartController.createCart)
 
-router.put("/:cid",isUser, isPremiun,  cartController.addToCart);
+router.put("/:cartId",  cartController.addToCart);
 
 router.delete("/:cid/product/:pid", isUser, cartController.removeFromCart);
 

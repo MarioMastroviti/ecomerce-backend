@@ -4,10 +4,7 @@ const passport = require("passport");
 const { CustomError } = require('../error/CustomError.js');
 const { generateUserErrorInfo } = require('../error/info.js');
 const ErrorCodes = require('../error/enums.js');
-const { addLogger } = require('../utils/loggerCustom.js');
-const { upload } = require('../config/multer.js');
-
-
+const transporter = require('../utils/nodemailer.js')
 const userDao = new daoUser();
 
 exports.getRestore = async (req, res) => {
@@ -85,6 +82,7 @@ exports.handleLogin = async (req, res) => {
             }
             return res.status(400).json({ result: "error", error: errorMessage || "Usuario no encontrado" });
         }
+        const user = await userDao.updateLastConnection(req.user._id);
 
         req.session.user = {
             first_name: req.user.first_name,
@@ -175,3 +173,80 @@ exports.postFiles = async (req, res) => {
   };
   
   
+  exports.getAllUsers = async (req, res) => {
+    try {
+        const users = await userDao.getAllUsers();
+        res.render('users', { users }); 
+    } catch (error) {
+        req.logger.error("Error al obtener todos los usuarios:", error);
+        res.status(500).json({ result: "error", error: "Error interno del servidor" });
+    }
+};
+
+
+
+
+  exports.deleteUserInactive = async (req, res) => {
+    try {
+        const { uid } = req.params;
+        const user = await userDao.findUserById(uid);
+
+        if (!user) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+
+       
+        const currentDate = new Date();
+        const lastConnectionDate = user.last_connection || new Date();
+
+        const timeDifference = currentDate - lastConnectionDate;
+
+        const daysDifference = timeDifference / (1000 * 60 * 60 * 24);
+
+       
+        const inactiveDaysLimit = 2;
+
+       
+        if (daysDifference > inactiveDaysLimit) {
+           
+            const mailOptions = {
+                from: 'mariomastroviti1@gmail.com',
+                to: user.email,
+                subject: 'Aviso de eliminación de cuenta por inactividad',
+                text: `Hola ${user.first_name}, tu cuenta será eliminada en breve debido a inactividad.`,
+            };
+
+            await transporter.sendMail(mailOptions);
+
+            const result = await userDao.deleteUser(uid);
+            return res.status(200).json({ message: 'Usuario eliminado exitosamente' });
+        } else {
+            return res.status(200).json({ message: 'El usuario no está inactivo' });
+        }
+    } catch (error) {
+        console.error('Error al eliminar usuario inactivo:', error);
+        return res.status(500).json({ error: 'Error interno del servidor' });
+    }
+};
+
+exports.deleteUser = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const user = await userDao.findUserById(userId);
+
+        if (!user) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+
+        const result = await userDao.deleteUser(userId);
+
+        if (result.status === 'success') {
+            return res.status(200).json({ message: 'Usuario eliminado exitosamente' });
+        } else {
+            return res.status(500).json({ result: 'error', error: 'Error al eliminar el usuario' });
+        }
+    } catch (error) {
+        console.error('Error al eliminar usuario:', error);
+        return res.status(500).json({ result: 'error', error: 'Error interno del servidor' });
+    }
+};

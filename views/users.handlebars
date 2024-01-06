@@ -1,0 +1,94 @@
+<ul>
+    {{#each users}}
+        <li class="user-item">
+            <p>Nombre: {{first_name}}</p>
+            <p>Apellido: {{last_name}}</p>
+            <p>Edad: {{age}}</p>
+            <p>Rol: {{role}}</p>
+            <button class="delete-button" data-user-id="{{_id}}">Eliminar</button>
+            <button class="change-role-button" data-user-id="{{_id}}">Cambiar Rol</button>
+        </li>
+    {{/each}}
+</ul>
+
+
+
+<style>
+
+.user-item {
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    list-style: none;
+}
+
+.delete-button,
+.change-role-button {
+    margin-top: 5px;
+    padding: 5px;
+    cursor: pointer;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+}
+</style>
+
+
+
+
+<script>
+
+
+document.addEventListener('click', async function (event) {
+    if (event.target.classList.contains('delete-button')) {
+        const userId = event.target.dataset.userId;
+
+        const confirmDelete = confirm('¿Estás seguro de que deseas eliminar este usuario?');
+
+        if (confirmDelete) {
+            try {
+                const response = await fetch(`/api/sessions/deleteUser/${userId}`, {
+                    method: 'DELETE',
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    console.log(result.message);
+                
+                } else {
+                    console.error(result.error);
+                    
+                }
+            } catch (error) {
+                console.error('Error al eliminar el usuario:', error);
+            }
+        }
+    } else if (event.target.classList.contains('change-role-button')) {
+        const userId = event.target.dataset.userId;
+        const nuevoRole = prompt('Ingrese el nuevo role (user, premiun, admin):');
+
+        if (nuevoRole) {
+            const response = await fetch(`/api/sessions/premiun/${userId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ nuevoRole }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                console.log(result.message);
+                    } else {
+                console.error(result.error);
+               
+            }
+        }
+    }
+});
+
+
+</script>

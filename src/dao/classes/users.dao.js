@@ -1,14 +1,23 @@
-const {usersModel} = require('../mongo/models/users.model')
+const { usersModel } = require('../mongo/models/users.model')
 const { createHash } = require('../../utils/utils');
 
 
 
 
 class UserDao {
-    
+
+    getAllUsers = async () => {
+        try {
+            const users = await usersModel.find({}, { first_name: 1, last_name: 1, email: 1, age: 1, role: 1 });
+            return users;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     createUser = async ({ first_name, last_name, email, age, password }) => {
         try {
-           
+
             const hashedPassword = createHash(password);
             await usersModel.create({
                 first_name,
@@ -22,7 +31,7 @@ class UserDao {
         }
     }
 
-findUserByEmail = async(email) => {
+    findUserByEmail = async (email) => {
         try {
             return await usersModel.findOne({ email: email });
         } catch (error) {
@@ -30,7 +39,24 @@ findUserByEmail = async(email) => {
         }
     }
 
- updatePassword = async(userId, newPassword) =>{
+    findUserById = async (uid) => {
+        try {
+            return await usersModel.findOne({ _id: uid });
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    deleteUser = async (uid) => {
+        try {
+            const result = await usersModel.deleteOne({ _id: uid });
+            return result;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    updatePassword = async (userId, newPassword) => {
         try {
             const hashedPassword = createHash(newPassword);
             await usersModel.updateOne({ _id: userId }, { password: hashedPassword });
@@ -39,7 +65,7 @@ findUserByEmail = async(email) => {
         }
     }
 
-changeUserRole = async(userId, nuevoRole) =>{
+    changeUserRole = async (userId, nuevoRole) => {
         try {
             const result = await usersModel.updateOne({ _id: userId }, { role: nuevoRole });
             return result;
@@ -62,8 +88,26 @@ changeUserRole = async(userId, nuevoRole) =>{
             return null;
         }
     };
-    
-    
+
+    updateLastConnection = async (uid) => {
+        try {
+            const user = await usersModel.findOneAndUpdate(
+                { _id: uid },
+                { $set: { last_connection: new Date() } },
+                { new: true } 
+            );
+
+            if (!user) {
+                throw new Error('Usuario no encontrado');
+            }
+
+            return user;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+
 }
 
 module.exports = UserDao;

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de Compras</title>
+    <link rel="stylesheet" href="/styles/cart.css">
+    <!-- Si tienes un archivo de estilos para el carrito, puedes enlazarlo aquí -->
+</head>
+
+<body>
+    <h1>Carrito de Compras</h1>
+
+    {{#if carrito}}
+    <p>Detalles del carrito:</p>
+    <ul>
+          {{#each carrito.products}}
+                <li>
+                    <strong>{{this.product.titulo}}</strong>
+                    <span>Cantidad: {{this.quantity}}</span>
+                    <span>Precio unitario: {{this.product.precio}}</span>
+                </li>
+            {{/each}}
+    </ul>
+
+    <button class="purchase-cart">Comprar</button>
+    {{else}}
+    <p>El carrito está vacío.</p>
+    {{/if}}
+
+</html>
+
+
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f8f8f8;
+    }
+
+    h1 {
+        text-align: center;
+        color: #333;
+    }
+
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    li {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        margin: 10px 0;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    li strong {
+        font-size: 1.2em;
+        color: #333;
+    }
+
+    li span {
+        display: block;
+        margin-top: 5px;
+        color: #777;
+    }
+
+    .purchase-cart {
+        background-color: #4caf50;
+        color: #fff;
+        padding: 10px 20px;
+        font-size: 1em;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .purchase-cart:hover {
+        background-color: #45a049;
+    }
+</style>

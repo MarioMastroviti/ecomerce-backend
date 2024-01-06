@@ -27,9 +27,6 @@ router.get('/api/product/createProducts', (req, res) => {
 });
 
 
-
-
-
 router.get('/api/chat', (req, res) => {
     res.render('chat', {
         titulo: 'chat en tiempo real'

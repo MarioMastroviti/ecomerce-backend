@@ -30,6 +30,8 @@ exports.getProducts = async (req, res, next) => {
    
     const showLink = req.session.user.role === 'admin' || req.session.user.role === 'premiun';
 
+
+
     res.render('product', {
       products: productsDTO,
       showLink,
@@ -57,22 +59,22 @@ exports.getProductById = async (req, res) => {
    
     req.logger.info(`${req.method} en ${req.url} - ${new Date().toLocaleTimeString()}`);
 
-    const { pid } = req.params;
+    const { productId } = req.params;
 
-    if (pid < 0) {
+    if (productId < 0) {
       CustomError.createError({
         name: 'Invalid Params',
-        cause: generateProductConsultErrorInfo(req.params.pid),
+        cause: generateProductConsultErrorInfo(req.params.productId),
         message: 'Error to get product by ID',
         code: ErrorCodes.INVALID_PARAM
       });
     }
 
-    const product = await ProductDAO.getProductById(pid);
+    const product = await ProductDAO.getProductById(productId);
 
     if (!product) {
       
-      req.logger.warn(`Product not found for ID: ${pid}`);
+      req.logger.warn(`Product not found for ID: ${productId}`);
       return res.status(404).send({ result: 'error', message: 'Product not found' });
     }
 
@@ -83,6 +85,7 @@ exports.getProductById = async (req, res) => {
     res.status(500).send({ result: 'error', message: 'Internal Server Error' });
   }
 };
+
 
 exports.getCreateProduct = async (req, res) => {
   res.render('createProduct'); 
@@ -105,9 +108,9 @@ exports.createProduct = async (req, res) => {
       throw error;
     }
 
-    const email = req.session.user.email;
-    const role = req.session.user.role;
-
+    const email = req.session.user?.email ?? 'defaultEmail';
+    const role = req.session.user?.role ?? 'defaultRole';
+    
     const productDTO = new ProductDTO({
       titulo,
       categoria,
@@ -155,23 +158,14 @@ exports.deleteProduct = async (req, res) => {
   try {
     req.logger.info(`${req.method} en ${req.url} - ${new Date().toLocaleTimeString()}`);
 
-    const { pid } = req.params;
+    const { productId } = req.params;
 
-    const product = await ProductDAO.getProductById(pid);
+    const product = await ProductDAO.deleteProduct(productId);
 
     if (!product) {
       return res.status(404).json({ result: 'error', message: 'Producto no encontrado' });
     }
 
-    const userRole = req.session.user.role;
-
-    if (userRole === 'admin' || product.owner === req.session.user.email) {
-      await ProductDAO.deleteProduct(pid);
-      return res.status(200).json({ result: 'success', message: 'Producto eliminado exitosamente' });
-  
-    } else {
-      return res.status(403).json({ result: 'error', message: 'No tienes permisos para eliminar este producto' });
-    }
 
   } catch (error) {
     req.logger.warn(`Error in deleteProduct: ${error.message}`, { error });

@@ -3,86 +3,197 @@
 <h1>Lista de Productos</h1>
 
 {{#if showLink}}
-    <a href="/api/product/createProduct" class="create-link">Crear Producto</a>
+<a href="/api/product/createProduct" class="create-link">Crear Producto</a>
 {{/if}}
 
 <ul>
     {{#each products}}
-        <li>
-            <h2>{{titulo}}</h2>
-            <p>Categoría: {{categoria}}</p>
-            <p>Precio: {{precio}}</p>
-            <p>Stock: {{stock}}</p>
-            <p>id: {{_id}}</p>
+    <li>
+        <h2>{{titulo}}</h2>
+        <p>Categoría: {{categoria}}</p>
+        <p>Precio: {{precio}}</p>
+        <p>Stock: {{stock}}</p>
+        <label for="quantity-{{_id}}">Cantidad:</label>
+        <input type="number" id="quantity-{{_id}}" class="quantity-input" value="1" min="1">
+        <button class="add-cart" data-product-id="{{_id}}">Agregar al carrito</button>
 
 
 
 
 
+        {{#if showDeleteButton}}
+        <form method="POST" action="/api/product/{{_id}}?_method=DELETE">
+            <button type="submit" class="delete-product">Eliminar Producto</button>
+        </form>
+        {{/if}}
 
-
-       
-
-
-{{#if showDeleteButton}}
-    <form method="POST" action="/api/product/{{_id}}?_method=DELETE">
-        <button type="submit" class="delete-button">Eliminar Producto</button>
-    </form>
-{{/if}}
-
-
-
-
-        </li>
+    </li>
     {{/each}}
 </ul>
 
 <div class="pagination">
     {{#if pagination.hasPrevPage}}
-        <a href="?page={{pagination.prevPage}}">Anterior</a>
+    <a href="?page={{pagination.prevPage}}">Anterior</a>
     {{/if}}
 
     <span>Página {{pagination.page}} de {{pagination.totalPages}}</span>
 
     {{#if pagination.hasNextPage}}
-        <a href="?page={{pagination.nextPage}}">Siguiente</a>
+    <a href="?page={{pagination.nextPage}}">Siguiente</a>
     {{/if}}
 </div>
 
 
+<!--
+<script>
+    document.addEventListener('click', async function (event) {
+    if (event.target.classList.contains('add-cart')) {
+       const productId = event.target.dataset.productId;
+ // Obtener el valor de la cantidad desde el campo de entrada
+        const quantityInput = document.getElementById(`quantity-${productId}`);
+        const quantity = quantityInput ? parseInt(quantityInput.value) : 1;
+
+        try {
+console.log("Usuario autenticado:", {{ isAuthenticated }});
+            if (!{{ isAuthenticated }}) {
+                // Puedes mostrar un mensaje de alerta o redirigir a la página de inicio de sesión
+                alert('Debes iniciar sesión para agregar productos al carrito');
+                return;
+            }
+
+            // Obtener información sobre el carrito actual del usuario
+            const cartResponse = await fetch(`/api/cart/${{ cartAutheticated }}`);
+            const cartResult = await cartResponse.json();
+
+            if (!cartResponse.ok || !cartResult.payload) {
+                // Manejar el caso en el que el usuario no tiene un carrito
+                alert('Error al obtener información del carrito');
+                return;
+            }
+
+            // Confirmar la acción antes de agregar el producto al carrito
+            const confirmAction = confirm('¿Seguro que deseas agregar este producto al carrito?');
+
+            if (!confirmAction) {
+                return;
+            }
+
+            // Agregar el producto al carrito
+            const response = await fetch(`/api/cart/${{ isAuthenticated._id }}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ pid: productId, quantity: quantity }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert('Producto agregado al carrito correctamente');
+
+                // Aquí puedes actualizar la interfaz de usuario para reflejar que el producto se agregó al carrito
+            } else {
+                alert('Error al agregar el producto al carrito: ' + result.error);
+                // Maneja el error de agregar el producto al carrito
+            }
+        } catch (error) {
+            alert('Error al agregar el producto al carrito');
+            console.error('Error al agregar el producto al carrito:', error);
+        }
+    }
+});
+
+</script>
+
+-->
+
+<script>
+    document.addEventListener('click', async function (event) {
+        if (event.target.classList.contains('add-cart')) {
+            const productId = event.target.dataset.productId;
+            const quantityInput = document.getElementById(`quantity-${productId}`);
+            const quantity = quantityInput ? parseInt(quantityInput.value) : 1;
+            const userId = "{{ userId }}"; // Asegúrate de tener el userId disponible en tu página
+            
+            try {
+                // Obtener el carrito del usuario
+                const cartResponse = await fetch(`/api/cart/${userId}`);
+                const cartResult = await cartResponse.json();
+                console.log(cartResult);
+
+                // Agregar el producto al carrito
+                const addToCartResponse = await fetch(`/api/cart/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ pid: productId, quantity: quantity }),
+                });
+
+                const addToCartResult = await addToCartResponse.json();
+
+                if (addToCartResponse.ok) {
+                    console.log(addToCartResult.message);
+                } else {
+                    console.error(addToCartResult.error);
+                }
+            } catch (error) {
+                console.error('Error al agregar el producto al carrito:', error);
+            }
+        }
+    });
+</script>
+
+
+
+
+
+
 
 <style>
+    h1 {
+        font-size: 24px;
+        color: #333;
+        display: flex;
+        justify-content: center;
+    }
 
-h1 {
-    font-size: 24px;
-    color: #333;
-    display: flex;
-    justify-content: center;
-}
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
 
-ul {
-    list-style-type: none;
-    padding: 0;
-}
+    li {
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 10px;
+        background-color: #f9f9f9;
+    }
 
-li {
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 10px;
-    margin-bottom: 10px;
-    background-color: #f9f9f9;
-}
+    h2 {
+        font-size: 20px;
+        color: #007bff;
+    }
 
-h2 {
-    font-size: 20px;
-    color: #007bff;
-}
+    p {
+        font-size: 16px;
+        color: #555;
+        margin: 5px 0;
+    }
 
-p {
-    font-size: 16px;
-    color: #555;
-    margin: 5px 0;
-}
+    .create-link {
+        display: blo
+    }
 
-.create-link {
-    display: blo
+    .delete-product,
+    .add-cart {
+        margin-top: 5px;
+        padding: 5px;
+        cursor: pointer;
+        background-color: #3498db;
+        color: #fff;
+        border: none;
+        border-radius: 3px;
+    }

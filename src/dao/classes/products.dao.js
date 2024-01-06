@@ -12,9 +12,9 @@ class ProductDAO {
  
 }
 
-getProductById = async (pid) =>  {
+getProductById = async (productId) =>  {
     try {
-      const product = await productsModel.findOne({ _id: pid });
+      const product = await productsModel.findById({ _id: productId });
       return product;
     } catch (error) {
       
@@ -41,9 +41,9 @@ createProduct = async ({ titulo, categoria, precio, stock, imagenes, owner }) =>
     }
   }
 
-  deleteProduct = async (pid) => {
+  deleteProduct = async (productId) => {
     try {
-        const result = await productsModel.deleteOne({ _id: pid });
+        const result = await productsModel.deleteOne({ _id: productId });
         return result;
     } catch (error) {
       throw error; 

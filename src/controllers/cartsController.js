@@ -9,6 +9,7 @@ const ticketsDao = new daoTickets();
 const cartDao = new daoCart()
 const ProductDAO = new daoProduct()
 
+
 exports.getCartById = async (req, res) => {
     try {
         const { cid } = req.params;
@@ -25,10 +26,11 @@ exports.getCartById = async (req, res) => {
     }
 };
 
+
 exports.createCart = async (req, res) => {
     try {
-        const { uid } = req.body;
-        const cart = await cartDao.createCart(uid);
+        const { userId } = req.params;
+        const cart = await cartDao.createCart(userId);
 
         const cartDTO = new CartDTO(cart);
 
@@ -39,9 +41,10 @@ exports.createCart = async (req, res) => {
     }
 };
 
+
 exports.addToCart = async (req, res) => {
     try {
-        const { cid } = req.params;
+        const { cartId } = req.params;
         const { pid, quantity = 1 } = req.body;
 
        
@@ -59,7 +62,7 @@ exports.addToCart = async (req, res) => {
             return res.status(403).json({ result: "error", error: "No puedes agregar productos creados por otros usuarios" });
         }
 
-        const result = await cartDao.addToCart(cid, pid, quantity);
+        const result = await cartDao.addToCart(cartId, pid, quantity);
 
         if (result.error) {
             return res.status(404).json({ result: "error", error: result.error });
@@ -71,6 +74,7 @@ exports.addToCart = async (req, res) => {
         res.status(500).json({ result: "error", error: "Error interno del servidor." });
     }
 };
+
 
 exports.removeFromCart = async (req, res) => {
     try {

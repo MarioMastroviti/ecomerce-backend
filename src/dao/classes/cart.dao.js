@@ -1,5 +1,6 @@
 const { cartModel } = require('../mongo/models/cart.model.js');
 const { productsModel } = require('../mongo/models/products.model.js');
+const {usersModel} = require('../mongo/models/users.model.js')
 
 
 class cartDao {
@@ -52,7 +53,7 @@ class cartDao {
         }
     }
 
-    removeFromCart = async(cartId, productId) =>{
+    removeFromCart = async (cartId, productId) => {
         try {
             const carrito = await cartModel.findOne({ _id: cartId });
             if (!carrito) {
@@ -74,7 +75,7 @@ class cartDao {
         }
     }
 
-    clearCart = async(cartId) => {
+    clearCart = async (cartId) => {
         try {
             const carrito = await cartModel.findOne({ _id: cartId });
             if (!carrito) {
@@ -90,7 +91,7 @@ class cartDao {
         }
     }
 
-    updateCartItem = async(cartId, productId, quantity) =>{
+    updateCartItem = async (cartId, productId, quantity) => {
         try {
             if (quantity <= 0) {
                 return { error: "Ingresar al menos una unidad del producto" };

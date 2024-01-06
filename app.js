@@ -78,13 +78,21 @@ app.use(passport.initialize())
 app.use(passport.session())
 app.use(cookieParser())
 
+const hbs = handlebars.create({
+  // ... otras configuraciones
+  runtimeOptions: {
+      allowProtoPropertiesByDefault: true,
+      allowProtoMethodsByDefault: true,
+  },
+});
 
-//Configuración de handlebars
-app.engine("handlebars", handlebars.engine())
-//Usa la carpeta views como carpeta de vistas
-app.set("views", __dirname + "/views")
-//Usa handlebars como motor de plantillas
-app.set("view engine", "handlebars")
+// Configurar Express para usar el motor de Handlebars
+app.engine("handlebars", hbs.engine);  
+// Usa la carpeta views como carpeta de vistas
+app.set("views", __dirname + "/views");
+// Usa handlebars como motor de plantillas
+app.set("view engine", "handlebars");
+
 //Usa los archivos dentro de la carpeta views
 app.use(express.static(__dirname, + "/views"))
 //Usa los archivos dentro de la carpeta public
