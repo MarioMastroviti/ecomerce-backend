@@ -21,7 +21,7 @@ class cartDao {
     try {
       const cart = await cartModel
         .findOne({ _id: cartId })
-        .populate('products.product'); // Pobla la referencia a 'product'
+        .populate('products.product'); 
 
       return cart;
     } catch (error) {
@@ -58,14 +58,12 @@ class cartDao {
                 carrito.products.push({ product: productId, quantity: quantity });
             }
     
-            // Calcular totalPrice
             let totalPrice = 0;
             carrito.products.map((p) => {
                 const productPrice = p.product.price || 0;
                 totalPrice += productPrice * p.quantity;
             });
     
-            // Actualizar totalPrice en el carrito
             carrito.totalPrice = totalPrice;
     
             await cartModel.updateOne({ _id: cartId }, carrito);

@@ -160,6 +160,12 @@ app.get('/loggerTest', addLogger, async (req, res) => {
   }
 });
 
+app.use((req, res, next) => {
+  req.io = io;
+  next();
+});
+
+
 
 io.on('connection', (socket) => {
   console.log('a user connected')

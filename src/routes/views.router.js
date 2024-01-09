@@ -7,14 +7,6 @@ const passport = require("passport")
 
 
 
-
-
-
-
-
-
-
-
 router.get("/api/sessions/github", passport.authenticate("github", { scope: ["user:email"] }), async (req, res) => { })
 
 router.get("/api/sessions/githubcallback", passport.authenticate("github", { failureRedirect: "/login" }), async (req, res) => {

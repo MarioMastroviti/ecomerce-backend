@@ -62,6 +62,7 @@ const initializePassport = () => {
 
 
 
+
     passport.use("github", new GitHubStrategy({
         clientID: "Iv1.e0fad190055cf2a3",
         clientSecret: "1971a8ec95d4a391bd5d3c61bbe4298e2f001cdb",
@@ -73,13 +74,15 @@ const initializePassport = () => {
           
             if (!user) {
                 let newUser = {
-                    first_name: profile._json.name,
-                    last_name: "",
+                    first_name: profile._json.login,
+                    last_name: "github",
                     age: 18,
                     email: profile._json.email,
-                    password: ""
+                    password: "github"
                 };
+               
                 let result = await usersModel.create(newUser);
+             
                 done(null, result);
             }
             else {

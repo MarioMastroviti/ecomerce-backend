@@ -74,48 +74,113 @@
 
 
 <style>
-    h1 {
-        font-size: 24px;
-        color: #333;
-        display: flex;
-        justify-content: center;
-    }
+    
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f8f8;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
 
-    ul {
-        list-style-type: none;
-        padding: 0;
-    }
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
 
-    li {
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        padding: 10px;
-        margin-bottom: 10px;
-        background-color: #f9f9f9;
-    }
+h1 {
+    color: #4285f4;
+}
 
-    h2 {
-        font-size: 20px;
-        color: #007bff;
-    }
+a {
+    color: #4285f4;
+    text-decoration: none;
+}
 
-    p {
-        font-size: 16px;
-        color: #555;
-        margin: 5px 0;
-    }
+a:hover {
+    text-decoration: underline;
+}
 
-    .create-link {
-        display: blo
-    }
+ul {
+    list-style-type: none;
+    padding: 0;
+}
 
-    .delete-product,
-    .add-cart {
-        margin-top: 5px;
-        padding: 5px;
-        cursor: pointer;
-        background-color: #3498db;
-        color: #fff;
-        border: none;
-        border-radius: 3px;
+li {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    padding: 15px;
+}
+
+h2 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+label {
+    margin-right: 10px;
+}
+
+.quantity-input {
+    width: 40px;
+}
+
+.add-cart {
+    background-color: #4caf50;
+    color: #fff;
+    padding: 8px 12px;
+    border: none;
+    cursor: pointer;
+}
+
+.add-cart:hover {
+    background-color: #45a049;
+}
+
+.delete-product {
+    background-color: #d9534f;
+    color: #fff;
+    padding: 8px 12px;
+    border: none;
+    cursor: pointer;
+}
+
+.delete-product:hover {
+    background-color: #c9302c;
+}
+
+.pagination {
+    margin-top: 20px;
+}
+
+.pagination a {
+    display: inline-block;
+    padding: 8px 12px;
+    margin-right: 5px;
+    background-color: #ddd;
+    color: #333;
+    text-decoration: none;
+    border: 1px solid #ddd;
+}
+
+.pagination a:hover {
+    background-color: #bbb;
+}
+
+.cart-link {
+    background-color: #4285f4;
+    color: #fff;
+    padding: 8px 12px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.cart-link:hover {
+    background-color: #357ae8;
+}
+
     }

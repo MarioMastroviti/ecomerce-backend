@@ -5,7 +5,6 @@ const {generateUserErrorInfo, generateProductConsultErrorInfo} = require('../err
 const ErrorCodes = require('../error/enums.js') 
 const {addLogger} = require('../utils/loggerCustom.js')
 
-
 const ProductDAO = new daoProduct()
 
 exports.getProducts = async (req, res, next) => {
@@ -14,7 +13,7 @@ exports.getProducts = async (req, res, next) => {
       return res.redirect('/api/sessions/login');
     }
 
-    const cartId = req.session.user.cart._id;
+    const cartId = req.user.cart._id;
     
     const limit = parseInt(req.query.limit) || 10;
     const page = parseInt(req.query.page) || 1;
@@ -34,7 +33,7 @@ exports.getProducts = async (req, res, next) => {
 
 
     res.render('product', {
-      products: productsDTO,
+      products: productsDTO, 
       showLink,
       cartId,
       pagination: {
@@ -156,6 +155,7 @@ exports.updateProduct = async (req, res) => {
       res.status(500).json({ result: 'error', message: 'Internal Server Error' });
   }
 };
+
 exports.deleteProduct = async (req, res) => {
   try {
     req.logger.info(`${req.method} en ${req.url} - ${new Date().toLocaleTimeString()}`);

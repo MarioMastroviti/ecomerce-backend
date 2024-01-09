@@ -5,6 +5,9 @@ const { CustomError } = require('../error/CustomError.js');
 const { generateUserErrorInfo } = require('../error/info.js');
 const ErrorCodes = require('../error/enums.js');
 const transporter = require('../utils/nodemailer.js')
+const cartDao = require('../dao/classes/cart.dao');
+
+const daoCart = new cartDao()
 const userDao = new daoUser();
 
 exports.getRestore = async (req, res) => {
@@ -25,8 +28,8 @@ exports.getProfile = async (req, res) => {
         return res.redirect('/api/sessions/login');
     }
     
-    const { first_name, last_name, email, age, role, cart } = req.session.user;
-    res.render('profile', { first_name, last_name, email, age, role, cart });
+    const { first_name, last_name, email, age, role } = req.session.user;
+    res.render('profile', { first_name, last_name, email, age, role });
     }
 
 exports.registerUser = async (req, res) => {
@@ -53,6 +56,14 @@ exports.registerUser = async (req, res) => {
         });
 
         await userDao.createUser(userDTO);
+
+        const user = await userDao.findUserByEmail(email);
+
+        const cart = await daoCart.createCart(user._id);
+
+        user.cart = cart._id;
+        await user.save();
+       
 
         res.redirect('/api/sessions/login');
     } catch (error) {
@@ -147,6 +158,7 @@ exports.changeUserRole = async (req, res) => {
         const result = await userDao.changeUserRole(userId, nuevoRole);
 
         if (result.status === 'success') {
+            req.session.user = result.updatedUser;
             res.status(200).json(result);
         } else {
             res.status(500).json(result);
@@ -255,3 +267,20 @@ exports.deleteUser = async (req, res) => {
         return res.status(500).json({ result: 'error', error: 'Error interno del servidor' });
     }
 };
+
+
+
+exports.getLoginGit = async(req, res) => {
+    req.session.user = req.user;
+    const user = await userDao.findUserByEmail(req.user.email);
+
+     await daoCart.createCart(user._id);
+
+    const cartId = req.session.user.cart._id;
+    console.log(cartId)
+
+    await user.save();
+    console.log(`/api/product?cartId=${cartId}`);
+
+    res.redirect(`/api/product?cartId=${cartId}`);
+}

@@ -7,15 +7,15 @@ const {isAdmin, isPremiun, isUser} = require('../middleware/authorize.js')
 
 router.get("/", productsController.getProducts);
 
-router.get("/:productId",  productsController.getProductById);
+router.get('/createProduct', productsController.getCreateProduct);
 
-router.get('/createProduct' , productsController.getCreateProduct)
+router.get("/:productId", productsController.getProductById);
 
-router.post("/createProduct",  productsController.createProduct);
+router.post("/createProduct",isAdmin, isPremiun,  productsController.createProduct);
 
 router.put("/:pid" , isAdmin, productsController.updateProduct);
 
-router.delete("/:productId", productsController.deleteProduct);
+router.delete("/:productId",isAdmin, productsController.deleteProduct);
 
 
 module.exports = router

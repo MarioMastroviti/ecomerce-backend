@@ -47,7 +47,6 @@ exports.createCart = async (req, res) => {
         res.status(500).json({ result: 'error', error: 'Error interno del servidor' });
     }
 };
-
 exports.addToCart = async (req, res) => {
     try {
         const { pid, cartId } = req.params;
@@ -63,7 +62,8 @@ exports.addToCart = async (req, res) => {
             return res.status(400).json({ result: "error", error: `Stock insuficiente, stock disponible: ${product.stock}` });
         }
 
-        // Aquí podrías llamar a tu función addToCart y obtener el resultado
+        await ProductDAO.updateProduct(pid, { stock: product.stock - quantity });
+
         const result = await cartDao.addToCart(cartId, pid, quantity);
 
         if (result.error) {
@@ -76,7 +76,6 @@ exports.addToCart = async (req, res) => {
         res.status(500).json({ result: "error", error: "Error interno del servidor." });
     }
 };
-
 
 
 
@@ -161,7 +160,7 @@ exports.purchaseCart = async (req, res) => {
 
         if (productAvaible.length > 0) {
             const ticketInfo = {
-                code: 'll', // O cualquier valor de código que desees asignar
+                code: 'll', 
                 amount: productsToPurchase.reduce((acc, productToPurchase) => {
                     acc += productToPurchase.product.precio * productToPurchase.quantity;
                     return acc;

@@ -53,9 +53,6 @@ createProduct = async ({ titulo, categoria, precio, stock, imagenes, owner }) =>
 }
 
 
-
-
-
 module.exports = ProductDAO;
 
 
