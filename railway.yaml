@@ -1,0 +1,8 @@
+services:
+  - name: web
+    env:
+      PORT: 8080
+    startScript: npm start  
+    routes:
+      - src: /api/sessions/register
+        dest: web

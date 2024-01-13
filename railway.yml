@@ -1,3 +1,0 @@
-endpoints:
-  - path: "/api/sessions/register"
-    command: "npm start"
