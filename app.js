@@ -130,6 +130,10 @@ app.use((err, req, res, next) => {
   }
 });
 
+app.get('/', (req, res) => {
+  res.redirect('/api/sessions/register');
+});
+
 
 app.use("/api/product", productsRouter);
 app.use("/api/cart", cartRouter)
