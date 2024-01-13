@@ -18,6 +18,13 @@ exports.getCartById = async (req, res) => {
         if (!carritoBuscado) {
             return res.status(404).json({ result: 'error', error: 'Carrito no encontrado.' });
         }
+        const total = carritoBuscado.products.reduce((acc, product) => {
+            acc += product.quantity * product.product.precio;
+            return acc;
+        }, 0);
+
+        // Añadir la propiedad 'total' al objeto 'cart'
+        carritoBuscado.total = total;
 
         res.render('cart', { cart: carritoBuscado });
 

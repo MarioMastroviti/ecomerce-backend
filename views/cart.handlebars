@@ -23,6 +23,11 @@
     </ul>
 
 
+ <div>
+            <strong>Total a abonar: {{cart.total}}</strong>
+    </div>
+
+
     <button class="purchase-cart">Comprar</button>
     {{else}}
     <p>El carrito está vacío.</p>
@@ -32,58 +37,78 @@
 </html>
 
 
-</html>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: #333;
+        }
 
+        h1 {
+            color: #007bff;
+            padding: 20px 0;
+        }
 
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f8f8f8;
-    }
+        ul {
+            list-style: none;
+            padding: 0;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
 
-    h1 {
-        text-align: center;
-        color: #333;
-    }
+        li {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            margin-bottom: 15px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            transition: transform 0.2s ease-in-out;
+        }
 
-    ul {
-        list-style-type: none;
-        padding: 0;
-    }
+        li:hover {
+            transform: translateY(-5px);
+        }
 
-    li {
-        background-color: #fff;
-        border: 1px solid #ddd;
-        margin: 10px 0;
-        padding: 10px;
-        border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
+        button.purchase-cart {
+            background-color: #28a745;
+            color: #fff;
+            padding: 12px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            margin-top: 20px;
+            transition: background-color 0.3s ease-in-out;
+        }
 
-    li strong {
-        font-size: 1.2em;
-        color: #333;
-    }
+        button.purchase-cart:hover {
+            background-color: #218838;
+        }
 
-    li span {
-        display: block;
-        margin-top: 5px;
-        color: #777;
-    }
+        div {
+            margin-top: 20px;
+            font-size: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
 
-    .purchase-cart {
-        background-color: #4caf50;
-        color: #fff;
-        padding: 10px 20px;
-        font-size: 1em;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-
-    .purchase-cart:hover {
-        background-color: #45a049;
-    }
-</style>
+        p {
+            color: #555;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+    </style>
